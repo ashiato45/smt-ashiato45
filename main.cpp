@@ -3,5 +3,7 @@
 
 int main(){
     std::cout << "Hello" << std::endl;
+
+    Minisat::SimpSolver solver;
     return 0;
 }

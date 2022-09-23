@@ -93,16 +93,16 @@ struct HelpTseitinData {
 };
 
 HelpTseitinData HelpTseitin(FormulaPtr f,
-                            std::shared_ptr<Minisat::Solver> solver) {
+                            Minisat::Solver& solver) {
     assert(f->op == Op::Op_And || f->op == Op::Op_Or);
-    auto freshPos = Formula::MakeAtom(solver->newVar());
+    auto freshPos = Formula::MakeAtom(solver.newVar());
     auto freshNeg = Formula::MakeNot(freshPos);
     std::vector<FormulaPtr> insidePos(f->terms.size());
     std::vector<FormulaPtr> insideNeg(f->terms.size());
     std::transform(f->terms.begin(), f->terms.end(), insidePos.begin(),
-                   [solver](FormulaPtr i) { return ApplyTseitin(i, solver); });
+                   [&solver](FormulaPtr i) { return ApplyTseitin(i, solver); });
     std::transform(f->terms.begin(), f->terms.end(), insidePos.begin(),
-                   [solver](FormulaPtr i) {
+                   [&solver](FormulaPtr i) {
                        return ApplyTseitin(Formula::MakeNot(i), solver);
                    });
 
@@ -110,7 +110,7 @@ HelpTseitinData HelpTseitin(FormulaPtr f,
 }
 }  // namespace
 
-FormulaPtr ApplyTseitin(FormulaPtr f, std::shared_ptr<Minisat::Solver> solver) {
+FormulaPtr ApplyTseitin(FormulaPtr f, Minisat::Solver& solver) {
     switch (f->op) {
         case Op::Op_Atom: {
             return f;
@@ -125,21 +125,26 @@ FormulaPtr ApplyTseitin(FormulaPtr f, std::shared_ptr<Minisat::Solver> solver) {
             // 中身のabたちと、¬aや¬bを先に処理する。
             auto [freshPos, freshNeg, insidePos, insideNeg] =
                 HelpTseitin(f, solver);
+            assert(freshPos);
+            assert(freshNeg);
 
             std::vector<FormulaPtr> newTerms;
             newTerms.push_back(freshPos);  // cの部分
             // ¬c∨a ∧ ¬c∨bたちの部分
             for (auto i : insidePos) {
                 newTerms.push_back(Formula::MakeOr(freshNeg, i));
+                assert(newTerms.back());
             }
             // ¬a∨¬b∨c の部分
             std::vector<FormulaPtr> lastPart;
             lastPart.push_back(freshPos);
             for (auto i : insideNeg) {
                 lastPart.push_back(i);
+                assert(lastPart.back());
             }
             newTerms.push_back(
                 FormulaPtr{new Formula{Op::Op_Or, {}, lastPart}});
+            assert(newTerms.back());
 
             return FormulaPtr{new Formula{Op::Op_And, {}, newTerms}};
         } break;
@@ -152,21 +157,26 @@ FormulaPtr ApplyTseitin(FormulaPtr f, std::shared_ptr<Minisat::Solver> solver) {
             // 中身のabたちと、¬aや¬bを先に処理する。
             auto [freshPos, freshNeg, insidePos, insideNeg] =
                 HelpTseitin(f, solver);
+            assert(freshPos);
+            assert(freshNeg);
 
             std::vector<FormulaPtr> newTerms;
             newTerms.push_back(freshPos);  // cの部分
             // ¬a∨c ∧ ¬b∨cたちの部分
             for (auto i : insideNeg) {
                 newTerms.push_back(Formula::MakeOr(freshPos, i));
+                assert(newTerms.back());
             }
             // ¬c∨a∨b の部分
             std::vector<FormulaPtr> lastPart;
             lastPart.push_back(freshNeg);
             for (auto i : insidePos) {
                 lastPart.push_back(i);
+                assert(lastPart.back());
             }
             newTerms.push_back(
                 FormulaPtr{new Formula{Op::Op_Or, {}, lastPart}});
+            assert(newTerms.back());
 
             return FormulaPtr{new Formula{Op::Op_And, {}, newTerms}};
         } break;

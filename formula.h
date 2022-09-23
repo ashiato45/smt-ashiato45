@@ -31,4 +31,4 @@ struct Formula
 };
 
 
-FormulaPtr ApplyTseitin(FormulaPtr form, std::shared_ptr<Minisat::Solver> solver);
+FormulaPtr ApplyTseitin(FormulaPtr form, Minisat::Solver& solver);

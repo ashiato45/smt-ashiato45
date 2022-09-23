@@ -84,12 +84,13 @@ FormulaPtr MakeRandomFormula(std::mt19937& engine, int varNum, int maxDepth, int
 TEST(FooTest, FormulaTest) {
     std::mt19937 engine(42);
     int varNum = 3;
-    for (int i = 0; i < 10; i++) {
-        auto f = MakeRandomFormula(engine, varNum, 5);
+    for (int i = 0; i < 10; i++) {  // 10はテストケースの数
+        std::cout << "* Case " << i << std::endl;
+        auto f = MakeRandomFormula(engine, varNum, 5);  // 最大深さ5
         std::ostringstream oss;
         f->AppendAsString(oss);
         oss << " === ";
-        //  eval
+        // とりあえず総当たりでSATを判定する。
         bool found = false;
         for(int i=0; i < 1 << varNum; i++){
           std::map<Minisat::Var, bool> assignment;
@@ -106,6 +107,14 @@ TEST(FooTest, FormulaTest) {
           oss << "UNSAT";
         }
         std::cout << oss.str() << std::endl;
+
+        // SATソルバで確認
+        Minisat::Solver solver;
+        auto transformed = ApplyTseitin(f, solver);
+        oss.clear();
+        transformed->AppendAsString(oss);
+        std::cout << oss.str() << std::endl;
+        // if(transformed->)
     }
 }
 

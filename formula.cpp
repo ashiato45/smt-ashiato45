@@ -101,7 +101,7 @@ HelpTseitinData HelpTseitin(FormulaPtr f,
     std::vector<FormulaPtr> insideNeg(f->terms.size());
     std::transform(f->terms.begin(), f->terms.end(), insidePos.begin(),
                    [&solver](FormulaPtr i) { return ApplyTseitin(i, solver); });
-    std::transform(f->terms.begin(), f->terms.end(), insidePos.begin(),
+    std::transform(f->terms.begin(), f->terms.end(), insideNeg.begin(),
                    [&solver](FormulaPtr i) {
                        return ApplyTseitin(Formula::MakeNot(i), solver);
                    });
@@ -127,6 +127,7 @@ FormulaPtr ApplyTseitin(FormulaPtr f, Minisat::Solver& solver) {
                 HelpTseitin(f, solver);
             assert(freshPos);
             assert(freshNeg);
+            assert(insideNeg.back());
 
             std::vector<FormulaPtr> newTerms;
             newTerms.push_back(freshPos);  // cの部分

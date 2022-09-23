@@ -111,6 +111,7 @@ TEST(FooTest, FormulaTest) {
         // SATソルバで確認
         Minisat::Solver solver;
         auto transformed = ApplyTseitin(f, solver);
+        oss.str("");
         oss.clear();
         transformed->AppendAsString(oss);
         std::cout << oss.str() << std::endl;

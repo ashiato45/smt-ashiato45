@@ -1,6 +1,7 @@
 #include "minisat/simp/SimpSolver.h"
 #include <memory>
 #include <vector>
+#include <sstream>
 
 enum Op{
     Op_Atom,
@@ -24,6 +25,7 @@ struct Formula
     static FormulaPtr MakeOr(FormulaPtr f1, FormulaPtr f2);
     static FormulaPtr MakeNot(FormulaPtr f1);
 
+    void AppendAsString(std::ostringstream& oss);
 };
 
 

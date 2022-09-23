@@ -1,6 +1,8 @@
 #include <iostream>
 #include <random>
+#include <sstream>
 
+#include "formula.h"
 #include "gtest/gtest.h"
 #include "minisat/simp/SimpSolver.h"
 
@@ -52,7 +54,43 @@ TEST(FooTest, MinisatTest) {
     ASSERT_EQ(solver.model[1], Minisat::l_True);
 }
 
-int main(int argc, char **argv) {
+// solverの側ではvarNum分の変数が作られていることを仮定する。
+FormulaPtr MakeRandomFormula(std::mt19937& engine, int varNum, int maxDepth, int depth=0) {
+  auto r = std::uniform_int_distribution<>(0, 3)(engine);
+  if(depth >= maxDepth){
+    r = 10;
+  }
+    switch (r) {
+        case 0: {
+            return Formula::MakeNot(MakeRandomFormula(engine, varNum, maxDepth, depth+1));
+        } break;
+        case 1: {
+            return Formula::MakeAnd(MakeRandomFormula(engine, varNum, maxDepth, depth+1),
+                                    MakeRandomFormula(engine, varNum, maxDepth, depth+1));
+        } break;
+        case 2: {
+            return Formula::MakeOr(MakeRandomFormula(engine, varNum, maxDepth, depth+1),
+                                   MakeRandomFormula(engine, varNum, maxDepth, depth+1));
+        } break;
+        default: {
+            auto i = std::uniform_int_distribution<>(0, varNum - 1)(engine);
+            return Formula::MakeAtom(i);
+        } break;
+    }
+}
+
+TEST(FooTest, FormulaTest) {
+    std::mt19937 engine(42);
+    int varNum = 3;
+    for (int i = 0; i < 10; i++) {
+        auto f = MakeRandomFormula(engine, varNum, 5);
+        std::ostringstream oss;
+        f->AppendAsString(oss);
+        std::cout << oss.str() << std::endl;
+    }
+}
+
+int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
 }

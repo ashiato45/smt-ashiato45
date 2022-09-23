@@ -5,6 +5,8 @@
 #include "formula.h"
 #include "gtest/gtest.h"
 #include "minisat/simp/SimpSolver.h"
+#include <map>
+#include <bitset>
 
 namespace {
 
@@ -86,6 +88,23 @@ TEST(FooTest, FormulaTest) {
         auto f = MakeRandomFormula(engine, varNum, 5);
         std::ostringstream oss;
         f->AppendAsString(oss);
+        oss << " === ";
+        //  eval
+        bool found = false;
+        for(int i=0; i < 1 << varNum; i++){
+          std::map<Minisat::Var, bool> assignment;
+          for(int j=0; j < varNum; j++){
+            assignment[j] = (((i >> j) & 1) != 0);
+          }
+          if(f->Eval(assignment)){
+            found = true;
+            oss << "SAT" << std::bitset<8>(i);
+            break;
+          }
+        }
+        if(!found){
+          oss << "UNSAT";
+        }
         std::cout << oss.str() << std::endl;
     }
 }

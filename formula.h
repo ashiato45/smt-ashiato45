@@ -2,6 +2,7 @@
 #include <memory>
 #include <vector>
 #include <sstream>
+#include <map>
 
 enum Op{
     Op_Atom,
@@ -26,6 +27,7 @@ struct Formula
     static FormulaPtr MakeNot(FormulaPtr f1);
 
     void AppendAsString(std::ostringstream& oss);
+    bool Eval(std::map<Minisat::Var, bool>& assignment);
 };
 
 

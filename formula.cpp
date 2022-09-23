@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <cassert>
+#include <numeric>
 
 FormulaPtr Formula::MakeAtom(Minisat::Var atom) {
     return FormulaPtr{new Formula{Op::Op_Atom, atom, {}}};
@@ -52,6 +53,36 @@ void Formula::AppendAsString(std::ostringstream& oss) {
             assert(0);
     }
 }
+
+    bool Formula::Eval(std::map<Minisat::Var, bool>& assignment){
+        switch(op){
+            case Op::Op_And:
+            {
+                return std::accumulate(terms.begin(), terms.end(), true, [&assignment](bool l, FormulaPtr r){
+                    return l && r->Eval(assignment);
+                });
+            }break;
+            case Op::Op_Atom:
+            {
+                assert(terms.size() == 0);
+                return assignment[atom];
+            }break;
+            case Op::Op_Not:
+            {
+                assert(terms.size() == 1);
+                return !terms[0]->Eval(assignment);
+            }break;
+            case Op::Op_Or:
+            {
+                return std::accumulate(terms.begin(), terms.end(), false, [&assignment](bool l, FormulaPtr r){
+                    return l || r->Eval(assignment);
+                });
+            }break;
+            default:
+            assert(0);
+        }
+    }
+
 
 namespace {
 struct HelpTseitinData {

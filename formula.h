@@ -31,7 +31,7 @@ struct Formula
 };
 
 // 適用した後、そのformulaはリテラルになるように変形する。変形したものはsubsにつっこむ。
-// rootだけ自分で書き換えができないので注意。
+// rootだけ自分で書き換えができないので注意。また、2回以上のNotもそのまま返している。
 Minisat::Var ApplyTseitinHelp(FormulaPtr formula, Minisat::Solver& solver, std::map<Minisat::Var, FormulaPtr>& subs);
 // こちらはできあがりをかえす。formulaは破壊される。
 FormulaPtr ApplyTseitin(FormulaPtr formula, Minisat::Solver& solver, std::map<Minisat::Var, FormulaPtr>& subs);

@@ -106,7 +106,7 @@ bool Formula::Eval(std::map<Minisat::Var, bool>& assignment) {
 // }
 // }  // namespace
 
-Minisat::Var ApplyTseitin(FormulaPtr formula, Minisat::Solver& solver,
+Minisat::Var ApplyTseitinHelp(FormulaPtr formula, Minisat::Solver& solver,
                           std::map<Minisat::Var, FormulaPtr>& subs) {
     switch (formula->op) {
         case Op::Op_Atom: {
@@ -117,7 +117,7 @@ Minisat::Var ApplyTseitin(FormulaPtr formula, Minisat::Solver& solver,
             // まず子どもたちに適用して子どもたちをリテラルにする
             for (int i = 0; i < formula->terms.size(); i++) {
                 auto replacedVar =
-                    ApplyTseitin(formula->terms[i], solver, subs);
+                    ApplyTseitinHelp(formula->terms[i], solver, subs);
                 if (replacedVar >= 0) {
                     formula->terms[i] = Formula::MakeAtom(replacedVar);
                 }
@@ -134,7 +134,7 @@ Minisat::Var ApplyTseitin(FormulaPtr formula, Minisat::Solver& solver,
                 case Op::Op_And: 
                 case Op::Op_Or:
                 {
-                    auto var = ApplyTseitin(term, solver, subs);
+                    auto var = ApplyTseitinHelp(term, solver, subs);
                     if(var >= 0){
                         formula->terms[0] = Formula::MakeAtom(var);
                     }
@@ -146,7 +146,7 @@ Minisat::Var ApplyTseitin(FormulaPtr formula, Minisat::Solver& solver,
                 } break;
                 case Op::Op_Not: {
                     assert(formula->terms.size() == 1);
-                    assert(ApplyTseitin(term, solver, subs) == -1);
+                    assert(ApplyTseitinHelp(term, solver, subs) == -1);
                     return -1;
                 } break;
                 default: {
@@ -158,4 +158,19 @@ Minisat::Var ApplyTseitin(FormulaPtr formula, Minisat::Solver& solver,
             assert(0);
             break;
     }
+}
+
+FormulaPtr ApplyTseitin(FormulaPtr formula, Minisat::Solver& solver, std::map<Minisat::Var, FormulaPtr>& subs){
+    auto lastVar = ApplyTseitinHelp(formula, solver, subs);
+    if(lastVar >= 0){
+        return Formula::MakeAtom(lastVar);
+    }else{
+        return formula;
+    }
+}
+
+void PutIntoSolver(FormulaPtr formula, Minisat::Solver& solver){
+    std::map<Minisat::Var, FormulaPtr> subs;
+    auto lastVar = ApplyTseitin(formula, solver, subs);
+
 }

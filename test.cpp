@@ -114,7 +114,7 @@ TEST(FooTest, FormulaTest) {
         for(int i=0; i < varNum; i++){
           solver.newVar();
         }
-        ApplyTseitin(f, solver, subs);
+        f = ApplyTseitin(f, solver, subs);
         oss.str("");
         oss.clear();
         f->AppendAsString(oss);

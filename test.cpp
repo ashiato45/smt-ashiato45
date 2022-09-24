@@ -110,11 +110,20 @@ TEST(FooTest, FormulaTest) {
 
         // SATソルバで確認
         Minisat::Solver solver;
-        auto transformed = ApplyTseitin(f, solver);
+        std::map<Minisat::Var, FormulaPtr> subs;
+        for(int i=0; i < varNum; i++){
+          solver.newVar();
+        }
+        ApplyTseitin(f, solver, subs);
         oss.str("");
         oss.clear();
-        transformed->AppendAsString(oss);
-        std::cout << oss.str() << std::endl;
+        f->AppendAsString(oss);
+        std::cout << "Tseitin: " << oss.str() << std::endl;
+        for(auto i: subs){
+          std::ostringstream temp;
+          i.second->AppendAsString(temp);
+          std::cout << static_cast<char>('a' + i.first) << ": " << temp.str() << std::endl;
+        }
         // if(transformed->)
     }
 }

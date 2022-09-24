@@ -30,5 +30,5 @@ struct Formula
     bool Eval(std::map<Minisat::Var, bool>& assignment);
 };
 
-
-FormulaPtr ApplyTseitin(FormulaPtr form, Minisat::Solver& solver);
+// 適用した後、そのformulaはリテラルになるように変形する。変形したものはsubsにつっこむ。
+Minisat::Var ApplyTseitin(FormulaPtr formula, Minisat::Solver& solver, std::map<Minisat::Var, FormulaPtr>& subs);

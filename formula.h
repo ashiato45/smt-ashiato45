@@ -3,6 +3,7 @@
 #include <vector>
 #include <sstream>
 #include <map>
+#include <string>
 
 enum Op{
     Op_Atom,
@@ -18,7 +19,7 @@ using FormulaPtr = std::shared_ptr<Formula>;
 struct Formula
 {
     Op op;
-    Minisat::Var atom;
+    Minisat::Var atom = -1;
     std::vector<std::shared_ptr<Formula>> terms;
 
     static FormulaPtr MakeAtom(Minisat::Var atom);
@@ -27,6 +28,8 @@ struct Formula
     static FormulaPtr MakeNot(FormulaPtr f1);
 
     void AppendAsString(std::ostringstream& oss);
+        std::string ToString();
+
     bool Eval(std::map<Minisat::Var, bool>& assignment);
 };
 

@@ -3,6 +3,11 @@
 #include <algorithm>
 #include <cassert>
 #include <numeric>
+#include <iostream>
+
+void AddingLog(std::string s){
+        std::cout << "Adding: " << s << std::endl;
+}
 
 FormulaPtr Formula::MakeAtom(Minisat::Var atom) {
     return FormulaPtr{new Formula{Op::Op_Atom, atom, {}}};
@@ -53,6 +58,13 @@ void Formula::AppendAsString(std::ostringstream& oss) {
             assert(0);
     }
 }
+
+        std::string Formula::ToString(){
+            std::ostringstream oss;
+            AppendAsString(oss);
+            return oss.str();
+        }
+
 
 bool Formula::Eval(std::map<Minisat::Var, bool>& assignment) {
     switch (op) {
@@ -195,11 +207,24 @@ FormulaPtr ApplyTseitin(FormulaPtr formula, Minisat::Solver& solver,
 Minisat::Lit Formula2MinisatLit(FormulaPtr formula) {
     switch (formula->op) {
         case Op::Op_Atom: {
-            return Minisat::Lit{formula->atom};
+            auto a = formula->atom;
+            assert(a >= 0);
+            char hoge[100];
+            hoge[0] = a + 'a';
+            hoge[1] = 0;
+            AddingLog(std::string("formula2: ") + std::string(hoge));
+            return Minisat::Lit{a};
         } break;
         case Op::Op_Not: {
             assert(formula->terms.size() == 1);
-            return ~Minisat::Lit{formula->terms[0]->atom};
+            auto a = formula->terms[0]->atom;
+            assert(a >= 0);
+            char hoge[100];
+            hoge[0] = a + 'a';
+            hoge[1] = 0;
+            AddingLog(std::string("formula2Not: ") + std::string(hoge));
+
+            return ~Minisat::Lit{a};
         } break;
         default:
             assert(0);
@@ -217,15 +242,19 @@ void AddSubstitutionToSolver(Minisat::Var freshVar, FormulaPtr formula,
             // ¬c∨b ∧ ¬a∨¬b∨c)になる。これを複数個に一般化する。
 
             // c部分
-            solver.addClause(Minisat::Lit{freshVar});
+            // AddingLog(Formula::MakeAtom(freshVar)->ToString());
+            // solver.addClause(Minisat::Lit{freshVar});
 
             // ¬c∨a ∧¬c∨b
+            // TODO: まずaがnegかもしれんというのを忘れてない
             for (auto i : formula->terms) {
+                AddingLog(Formula::MakeOr(Formula::MakeNot(Formula::MakeAtom(freshVar)), i)->ToString());
                 solver.addClause(~Minisat::Lit{freshVar},
                                  Formula2MinisatLit(i));
             }
 
             // ¬a∨¬b∨c 部分
+            AddingLog(" ¬a∨¬b∨c part");
             Minisat::vec<Minisat::Lit> lits;
             lits.push(Minisat::Lit{freshVar});
             for (auto i : formula->terms) {
@@ -234,8 +263,9 @@ void AddSubstitutionToSolver(Minisat::Var freshVar, FormulaPtr formula,
             solver.addClause(lits);
 
         } break;
-        case Op::Op_Atom:
+        case Op::Op_Atom:{assert(0);}break;
         case Op::Op_Not: {
+            assert(0);
             solver.addClause(Minisat::Lit{freshVar});
         } break;
         case Op::Op_Or: {
@@ -246,15 +276,19 @@ void AddSubstitutionToSolver(Minisat::Var freshVar, FormulaPtr formula,
             // ¬b∨c)になる。これを複数個に一般化する。
 
             // c部分
-            solver.addClause(Minisat::Lit{freshVar});
+            // AddingLog(Formula::MakeAtom(freshVar)->ToString());
+            // solver.addClause(Minisat::Lit{freshVar});
 
             // ¬a∨c ∧ ¬b∨c 部分
             for (auto i : formula->terms) {
+                AddingLog(Formula::MakeOr((Formula::MakeAtom(freshVar)), Formula::MakeNot(i))->ToString());
                 solver.addClause(Minisat::Lit{freshVar},
                                  ~Formula2MinisatLit(i));
             }
 
             // ¬c∨a∨b 部分
+                        AddingLog("¬c∨a∨b part");
+
             Minisat::vec<Minisat::Lit> lits;
             lits.push(~Minisat::Lit{freshVar});
             for (auto i : formula->terms) {
@@ -272,6 +306,7 @@ void PutIntoSolver(FormulaPtr formula, Minisat::Solver& solver) {
     auto transformed = ApplyTseitin(formula, solver, subs);
 
     // formula本体を登録。これはリテラルのはず。
+    AddingLog(transformed->ToString());
     solver.addClause(Formula2MinisatLit(transformed));
 
     // 置換部分を登録

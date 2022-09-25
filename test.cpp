@@ -168,8 +168,16 @@ TEST(FooTest, FormulaSatTest) {
         }
 
         PutIntoSolver(f, solver);
+        for(auto i=solver.clausesBegin(); i != solver.clausesEnd(); ++i){
+          
+        } 
         auto ret = solver.solve();
         std::cout << "SATRES: " << ret << std::endl;
+        if(ret){
+          for(int i=0; i < solver.nVars(); i++){
+            std::cout << static_cast<char>('a' + i) << (solver.model[i] == Minisat::l_True) << std::endl;
+          }
+        }
         // ASSERT_TRUE(ret);
         // if(transformed->)
     }

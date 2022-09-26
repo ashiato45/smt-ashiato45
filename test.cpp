@@ -85,59 +85,59 @@ FormulaPtr MakeRandomFormula(std::mt19937& engine, int varNum, int maxDepth,
     }
 }
 
-TEST(FooTest, FormulaTest) {
-    std::mt19937 engine(42);
-    int varNum = 3;
-    for (int i = 0; i < 10; i++) {  // 10はテストケースの数
-        std::cout << "* Case " << i << std::endl;
-        auto f = MakeRandomFormula(engine, varNum, 5);  // 最大深さ5
-        std::ostringstream oss;
-        f->AppendAsString(oss);
-        oss << " === ";
-        // とりあえず総当たりでSATを判定する。
-        bool found = false;
-        for (int i = 0; i < 1 << varNum; i++) {
-            std::map<Minisat::Var, bool> assignment;
-            for (int j = 0; j < varNum; j++) {
-                assignment[j] = (((i >> j) & 1) != 0);
-            }
-            if (f->Eval(assignment)) {
-                found = true;
-                oss << "SAT" << std::bitset<8>(i);
-                break;
-            }
-        }
-        if (!found) {
-            oss << "UNSAT";
-        }
-        std::cout << oss.str() << std::endl;
+// TEST(FooTest, FormulaTseitinTest) {
+//     std::mt19937 engine(42);
+//     int varNum = 3;
+//     for (int i = 0; i < 10; i++) {  // 10はテストケースの数
+//         std::cout << "* Case " << i << std::endl;
+//         auto f = MakeRandomFormula(engine, varNum, 5);  // 最大深さ5
+//         std::ostringstream oss;
+//         f->AppendAsString(oss);
+//         oss << " === ";
+//         // とりあえず総当たりでSATを判定する。
+//         bool found = false;
+//         for (int i = 0; i < 1 << varNum; i++) {
+//             std::map<Minisat::Var, bool> assignment;
+//             for (int j = 0; j < varNum; j++) {
+//                 assignment[j] = (((i >> j) & 1) != 0);
+//             }
+//             if (f->Eval(assignment)) {
+//                 found = true;
+//                 oss << "SAT" << std::bitset<8>(i);
+//                 break;
+//             }
+//         }
+//         if (!found) {
+//             oss << "UNSAT";
+//         }
+//         std::cout << oss.str() << std::endl;
 
-        // SATソルバで確認
-        Minisat::Solver solver;
-        std::map<Minisat::Var, FormulaPtr> subs;
-        for (int i = 0; i < varNum; i++) {
-            solver.newVar();
-        }
-        f = ApplyTseitin(f, solver, subs);
-        oss.str("");
-        oss.clear();
-        f->AppendAsString(oss);
-        std::cout << "Tseitin: " << oss.str() << std::endl;
-        for (auto i : subs) {
-            std::ostringstream temp;
-            i.second->AppendAsString(temp);
-            std::cout << static_cast<char>('a' + i.first) << ": " << temp.str()
-                      << std::endl;
-        }
+//         // SATソルバで確認
+//         Minisat::Solver solver;
+//         std::map<Minisat::Var, FormulaPtr> subs;
+//         for (int i = 0; i < varNum; i++) {
+//             solver.newVar();
+//         }
+//         f = ApplyTseitin(f, solver, subs);
+//         oss.str("");
+//         oss.clear();
+//         f->AppendAsString(oss);
+//         std::cout << "Tseitin: " << oss.str() << std::endl;
+//         for (auto i : subs) {
+//             std::ostringstream temp;
+//             i.second->AppendAsString(temp);
+//             std::cout << static_cast<char>('a' + i.first) << ": " << temp.str()
+//                       << std::endl;
+//         }
 
-        // if(transformed->)
-    }
-}
+//         // if(transformed->)
+//     }
+// }
 
 TEST(FooTest, FormulaSatTest) {
     std::mt19937 engine(42);
     int varNum = 3;
-    for (int i = 0; i < 10; i++) {  // 10はテストケースの数
+    for (int i = 0; i < 100; i++) {  // 10はテストケースの数
         std::cout << "* Case " << i << std::endl;
         auto f = MakeRandomFormula(engine, varNum, 5);  // 最大深さ5
         std::ostringstream oss;
@@ -173,11 +173,13 @@ TEST(FooTest, FormulaSatTest) {
         } 
         auto ret = solver.solve();
         std::cout << "SATRES: " << ret << std::endl;
-        if(ret){
-          for(int i=0; i < solver.nVars(); i++){
-            std::cout << static_cast<char>('a' + i) << (solver.model[i] == Minisat::l_True) << std::endl;
-          }
-        }
+        // if(ret){
+        //   for(int i=0; i < solver.nVars(); i++){
+        //     std::cout << static_cast<char>('a' + i) << (solver.model[i] == Minisat::l_True) << std::endl;
+        //   }
+        // }
+
+        ASSERT_EQ(ret, found);
         // ASSERT_TRUE(ret);
         // if(transformed->)
     }

@@ -8,6 +8,8 @@
 #include "gtest/gtest.h"
 #include "minisat/simp/SimpSolver.h"
 
+#include "euf.h"
+
 namespace {
 
 // テスト対象となるクラス Foo のためのフィクスチャ
@@ -184,6 +186,36 @@ TEST(FooTest, FormulaSatTest) {
         // if(transformed->)
     }
 }
+
+TEST(EufTest, TermConstTest){
+    auto a = EufSymbol::MakeAtom("a");
+    ASSERT_EQ(a.kind, EufKind::Atom);
+    auto b = EufSymbol::MakeAtom("b");
+    ASSERT_EQ(b.kind, EufKind::Atom);
+    auto f = EufSymbol::MakeFunction("f", 2);
+    ASSERT_EQ(f.kind, EufKind::Function);
+    auto fab = f.Apply2(EufTerm(a), EufTerm(b));
+    ASSERT_EQ(fab.kind, EufKind::Function);
+    // std::cout << fab.Print() << std::endl;
+    ASSERT_EQ(fab.Print(), "f(a, b)");
+    auto ffabb = f.Apply2(fab, EufTerm(b));
+    ASSERT_EQ(ffabb.Print(), "f(f(a, b), b)");
+    // std::cout << ffabb.Print() << std::endl;
+}
+
+// TEST(FooTest, ClosureTest) {
+//     // term集合をあらわすツリーをつくる
+//     // formulaをつくる
+
+//     EufTermTree pool;
+//     auto f = pool.MakeEufFunc("f", 2);
+//     auto a = pool.MakeEufAtom("a");
+//     auto b = pool.MakeEufAtom("b");
+//     auto term1 = MakeEufEq(f.apply2(a, b), a);
+//     // auto term2 = MakeEufNeq(f.apply2(f.apply2(a, b)), b);
+//     pool.ApplyClosure({term1});
+// }
+
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

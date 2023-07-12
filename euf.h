@@ -3,6 +3,7 @@
 #include <sstream>
 #include <stack>
 #include <cassert>
+#include <functional>
 
 enum EufKind{
     None,
@@ -45,7 +46,14 @@ class EufTerm{
         assert(f.kind == EufKind::Function);
     }
 
-    std::string Print();
+    std::string Print() const;
+};
+
+template<> struct std::hash<EufTerm>{
+    std::size_t operator()(EufTerm const& s) const noexcept
+    {
+        return std::hash<std::string>{}(s.Print());
+    }
 };
 
 // class EufTermTree{
@@ -54,6 +62,7 @@ class EufTerm{
 // };
 
 // termからそれに対応するノードを引くにひは？
+// 文字列のhashをつかおう。違う引数の同じシンボルが2度はでないようにする。
 
     // EufTermTree pool;
     // auto f = pool.MakeEufFunc("f", 2);

@@ -31,7 +31,7 @@ EufTerm EufSymbol::Apply2(EufTerm x, EufTerm y){
 // EufTerm(EufSymbol f, std::vector<EufTerm> args);
 
 
-std::string EufTerm::Print()
+std::string EufTerm::Print() const
 {
     switch (this->kind)
     {

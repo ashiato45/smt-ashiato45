@@ -203,6 +203,14 @@ TEST(EufTest, TermConstTest){
     // std::cout << ffabb.Print() << std::endl;
 }
 
+TEST(EufTest, TermHashTest){
+    auto a = EufSymbol::MakeAtom("a");
+    auto b = EufSymbol::MakeAtom("b");
+    auto f = EufSymbol::MakeFunction("f", 2);
+    auto fab = f.Apply2(EufTerm(a), EufTerm(b));
+    ASSERT_EQ(std::hash<EufTerm>{}(fab), 11670068950902842810);
+}
+
 // TEST(FooTest, ClosureTest) {
 //     // term集合をあらわすツリーをつくる
 //     // formulaをつくる

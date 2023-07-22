@@ -4,20 +4,14 @@
 #include <stack>
 #include <cassert>
 #include <functional>
-
-enum EufKind{
-    None,
-    Atom,
-    Function
-};
+#include <memory>
 
 class EufTerm;
 
 class EufSymbol{
     public:
     std::string name;
-    int numOp = 0;
-    EufKind kind = None;
+    int numOp = 0;  // 0は定数
 
     static EufSymbol MakeAtom(std::string name);
     static EufSymbol MakeFunction(std::string name, int operand);
@@ -27,23 +21,19 @@ class EufSymbol{
 
 class EufTerm{
     public:
-    EufKind kind = None;
     EufSymbol symbol;
     std::vector<EufTerm> args;
 
     explicit EufTerm(EufSymbol x): 
-    kind(EufKind::Atom),
     symbol(x)
     {
-        assert(x.kind == EufKind::Atom);
+        assert(x.numOp == 0);
     }
 
     EufTerm(EufSymbol f, std::vector<EufTerm> args):
-    kind(EufKind::Function),
     symbol(f),
     args(args)
     {
-        assert(f.kind == EufKind::Function);
     }
 
     std::string Print() const;
@@ -55,6 +45,14 @@ template<> struct std::hash<EufTerm>{
         return std::hash<std::string>{}(s.Print());
     }
 };
+
+struct EufPoolNode{
+    std::vector<std::shared_ptr<EufPoolNode>> children;
+    EufTerm term;
+    std::shared_ptr<EufPoolNode> unionArrow;
+};
+
+class EufPool{};
 
 // class EufTermTree{
 //     public:

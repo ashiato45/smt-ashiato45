@@ -189,13 +189,9 @@ TEST(FooTest, FormulaSatTest) {
 
 TEST(EufTest, TermConstTest){
     auto a = EufSymbol::MakeAtom("a");
-    ASSERT_EQ(a.kind, EufKind::Atom);
     auto b = EufSymbol::MakeAtom("b");
-    ASSERT_EQ(b.kind, EufKind::Atom);
     auto f = EufSymbol::MakeFunction("f", 2);
-    ASSERT_EQ(f.kind, EufKind::Function);
     auto fab = f.Apply2(EufTerm(a), EufTerm(b));
-    ASSERT_EQ(fab.kind, EufKind::Function);
     // std::cout << fab.Print() << std::endl;
     ASSERT_EQ(fab.Print(), "f(a, b)");
     auto ffabb = f.Apply2(fab, EufTerm(b));
@@ -208,7 +204,7 @@ TEST(EufTest, TermHashTest){
     auto b = EufSymbol::MakeAtom("b");
     auto f = EufSymbol::MakeFunction("f", 2);
     auto fab = f.Apply2(EufTerm(a), EufTerm(b));
-    ASSERT_EQ(std::hash<EufTerm>{}(fab), 11670068950902842810);
+    ASSERT_EQ(std::hash<EufTerm>{}(fab), 11670068950902842810ULL);
 }
 
 // TEST(FooTest, ClosureTest) {

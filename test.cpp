@@ -220,6 +220,17 @@ TEST(EufTest, TermHashTest){
 //     pool.ApplyClosure({term1});
 // }
 
+TEST(EufTest, PoolTest){
+    auto a = EufSymbol::MakeAtom("a");
+    auto b = EufSymbol::MakeAtom("b");
+    auto f = EufSymbol::MakeFunction("f", 2);
+    auto fab = f.Apply2(EufTerm(a), EufTerm(b));
+    
+    EufPool pool;
+    pool.Add(fab);
+
+    std::cout << pool;
+}
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

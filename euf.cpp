@@ -58,7 +58,7 @@ std::shared_ptr<EufPoolNode> EufPool::Add(const EufTerm& term){
     auto node = std::make_shared<EufPoolNode>();
     for(auto& i: term.args){
         auto childNode = Add(i);
-        node->children.push_back(childNode);
+        node->children.push_back(i);
     }
     node->unionArrow = nullptr;
     nodes[term] = node;
@@ -77,3 +77,15 @@ bool EufPool::Equals(const EufTerm& left, const EufTerm& right){
 void EufPool::Print(){
     assert(0);
 }
+
+// std::ostream& EufPool::operator<<(std::ostream& ostr, EufPool pool){
+//     ostr << "digraph graphname{" << std::endl;
+//     for(auto& i: pool.nodes){
+//         for(auto& j: i.second->children){
+//             ostr << "'" << i.first.Print() << "' -> '" << j.Print() << "';" << std::endl;
+//         }
+//     }
+//     ostr << "}";
+
+//     return ostr;
+// }

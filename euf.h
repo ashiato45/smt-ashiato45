@@ -76,7 +76,7 @@ template<> struct std::hash<EufTerm>{
 };
 
 struct EufPoolNode{
-    std::vector<std::shared_ptr<EufPoolNode>> children;
+    std::vector<EufTerm> children;
     std::shared_ptr<EufPoolNode> unionArrow;
 };
 
@@ -89,6 +89,18 @@ class EufPool{
     bool Equals(const EufTerm& left, const EufTerm& right);
 
     void Print();
+
+    friend std::ostream& operator<<(std::ostream& ostr, EufPool pool){
+        ostr << "digraph graphname{" << std::endl;
+        for(auto& i: pool.nodes){
+            for(auto& j: i.second->children){
+                ostr << "'" << i.first.Print() << "' -> '" << j.Print() << "';" << std::endl;
+            }
+        }
+        ostr << "}";
+
+        return ostr;
+    }
 };
 
 // class EufTermTree{

@@ -5,6 +5,7 @@
 #include <cassert>
 #include <functional>
 #include <memory>
+#include <unordered_map>
 
 class EufTerm;
 
@@ -17,6 +18,14 @@ class EufSymbol{
     static EufSymbol MakeFunction(std::string name, int operand);
 
     EufTerm Apply2(EufTerm x, EufTerm y);
+
+    bool operator==(const EufSymbol& rhs) const{
+        return this->name == rhs.name && this->numOp == rhs.numOp;
+    }
+
+    bool operator!=(const EufSymbol& rhs) const{
+        return !(*this == rhs);
+    }
 };
 
 class EufTerm{
@@ -37,6 +46,26 @@ class EufTerm{
     }
 
     std::string Print() const;
+
+    bool operator==(const EufTerm& rhs) const{
+        if(this->args.size() != rhs.args.size()){
+            return false;
+        }
+        if(this->symbol != rhs.symbol){
+            return false;
+        }
+        for(int i=0; i < args.size(); i++){
+            if(args[i] != rhs.args[i]){
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    bool operator!=(const EufTerm& rhs) const{
+        return !(*this == rhs);
+    }
 };
 
 template<> struct std::hash<EufTerm>{
@@ -48,11 +77,19 @@ template<> struct std::hash<EufTerm>{
 
 struct EufPoolNode{
     std::vector<std::shared_ptr<EufPoolNode>> children;
-    EufTerm term;
     std::shared_ptr<EufPoolNode> unionArrow;
 };
 
-class EufPool{};
+class EufPool{
+    public:
+    std::unordered_map<EufTerm, std::shared_ptr<EufPoolNode>> nodes;
+
+    std::shared_ptr<EufPoolNode> Add(const EufTerm& term);
+    void AddEquality(const EufTerm& left, const EufTerm& right);
+    bool Equals(const EufTerm& left, const EufTerm& right);
+
+    void Print();
+};
 
 // class EufTermTree{
 //     public:

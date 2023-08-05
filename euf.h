@@ -6,6 +6,7 @@
 #include <functional>
 #include <memory>
 #include <unordered_map>
+#include <unordered_set>
 
 class EufTerm;
 
@@ -78,6 +79,7 @@ template<> struct std::hash<EufTerm>{
 struct EufPoolNode{
     std::vector<EufTerm> children;
     std::shared_ptr<EufPoolNode> unionArrow;
+    std::unordered_set<EufTerm> parents;
 };
 
 class EufPool{

@@ -59,6 +59,7 @@ std::shared_ptr<EufPoolNode> EufPool::Add(const EufTerm& term){
     for(auto& i: term.args){
         auto childNode = Add(i);
         node->children.push_back(i);
+        childNode->children.push_back(i);
     }
     node->unionArrow = nullptr;
     nodes[term] = node;
@@ -67,6 +68,7 @@ std::shared_ptr<EufPoolNode> EufPool::Add(const EufTerm& term){
 }
 
 void EufPool::AddEquality(const EufTerm& left, const EufTerm& right){
+    // 
     assert(0);
 }
 

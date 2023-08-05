@@ -88,8 +88,6 @@ class EufPool{
     void AddEquality(const EufTerm& left, const EufTerm& right);
     bool Equals(const EufTerm& left, const EufTerm& right);
 
-    void Print();
-
     friend std::ostream& operator<<(std::ostream& ostr, EufPool pool){
         ostr << "digraph graphname{" << std::endl;
         for(auto& i: pool.nodes){

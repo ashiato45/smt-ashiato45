@@ -74,10 +74,6 @@ bool EufPool::Equals(const EufTerm& left, const EufTerm& right){
     assert(0);
 }
 
-void EufPool::Print(){
-    assert(0);
-}
-
 // std::ostream& EufPool::operator<<(std::ostream& ostr, EufPool pool){
 //     ostr << "digraph graphname{" << std::endl;
 //     for(auto& i: pool.nodes){

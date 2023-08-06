@@ -77,6 +77,7 @@ template<> struct std::hash<EufTerm>{
 };
 
 struct EufPoolNode{
+    std::shared_ptr<EufTerm> term;
     std::vector<std::shared_ptr<EufTerm>> children;
     std::shared_ptr<EufPoolNode> unionArrow;
     std::unordered_set<EufTerm> parents;
@@ -89,7 +90,7 @@ class EufPool{
     std::unordered_map<EufTerm, std::shared_ptr<EufTerm>> terms;
     std::unordered_map<std::shared_ptr<EufTerm>, std::shared_ptr<EufPoolNode>> nodes;
 
-    std::pair<std::shared_ptr<EufTerm>, std::shared_ptr<EufPoolNode>> Add(const EufTerm& term);
+    std::shared_ptr<EufPoolNode> Add(const EufTerm& term);
     void AddEquality(const EufTerm& left, const EufTerm& right);
     bool Equals(const EufTerm& left, const EufTerm& right);
 
@@ -106,7 +107,6 @@ class EufPool{
     }
 
     private:
-
 };
 
 // class EufTermTree{

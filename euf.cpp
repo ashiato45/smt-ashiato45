@@ -61,14 +61,18 @@ std::shared_ptr<EufPoolNode> EufPool::Add(const EufTerm& term){
         node->children.push_back(i);
         childNode->children.push_back(i);
     }
-    node->unionArrow = nullptr;
+    node->unionArrow = node;
     nodes[term] = node;
     
     return node;
 }
 
 void EufPool::AddEquality(const EufTerm& left, const EufTerm& right){
-    // 
+    // union-findつかってleftからrightに等号はる
+    
+
+    // 直近先祖をたどり、あらたな等号をチェック(再帰的)
+
     assert(0);
 }
 

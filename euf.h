@@ -82,6 +82,8 @@ struct EufPoolNode{
     std::unordered_set<EufTerm> parents;
 };
 
+
+// term -> p(term)をつくって、p(term)→poolnodeをつくるべきだったのか
 class EufPool{
     public:
     std::unordered_map<EufTerm, std::shared_ptr<EufPoolNode>> nodes;
@@ -101,6 +103,9 @@ class EufPool{
 
         return ostr;
     }
+
+    private:
+
 };
 
 // class EufTermTree{

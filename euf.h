@@ -77,7 +77,7 @@ template<> struct std::hash<EufTerm>{
 };
 
 struct EufPoolNode{
-    std::vector<EufTerm> children;
+    std::vector<std::shared_ptr<EufTerm>> children;
     std::shared_ptr<EufPoolNode> unionArrow;
     std::unordered_set<EufTerm> parents;
 };
@@ -86,9 +86,10 @@ struct EufPoolNode{
 // term -> p(term)をつくって、p(term)→poolnodeをつくるべきだったのか
 class EufPool{
     public:
-    std::unordered_map<EufTerm, std::shared_ptr<EufPoolNode>> nodes;
+    std::unordered_map<EufTerm, std::shared_ptr<EufTerm>> terms;
+    std::unordered_map<std::shared_ptr<EufTerm>, std::shared_ptr<EufPoolNode>> nodes;
 
-    std::shared_ptr<EufPoolNode> Add(const EufTerm& term);
+    std::pair<std::shared_ptr<EufTerm>, std::shared_ptr<EufPoolNode>> Add(const EufTerm& term);
     void AddEquality(const EufTerm& left, const EufTerm& right);
     bool Equals(const EufTerm& left, const EufTerm& right);
 
@@ -96,7 +97,7 @@ class EufPool{
         ostr << "digraph graphname{" << std::endl;
         for(auto& i: pool.nodes){
             for(auto& j: i.second->children){
-                ostr << "'" << i.first.Print() << "' -> '" << j.Print() << "';" << std::endl;
+                ostr << "'" << i.first->Print() << "' -> '" << j->Print() << "';" << std::endl;
             }
         }
         ostr << "}";

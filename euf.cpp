@@ -49,22 +49,25 @@ std::string EufTerm::Print() const
 
 }
 
-std::shared_ptr<EufPoolNode> EufPool::Add(const EufTerm& term){
-    auto found = nodes.find(term);
-    if(found != nodes.end()){
-        return found->second;
+std::pair<std::shared_ptr<EufTerm>, std::shared_ptr<EufPoolNode>> EufPool::Add(const EufTerm& term){
+    auto found = terms.find(term);
+    if(found != terms.end()){
+        return {found->second, nodes[found->second]};
     }
+
+    auto pTerm = std::make_shared<EufTerm>(term);
+    terms[term] = pTerm;
 
     auto node = std::make_shared<EufPoolNode>();
     for(auto& i: term.args){
-        auto childNode = Add(i);
-        node->children.push_back(i);
-        childNode->children.push_back(i);
+        auto childTermNode = Add(i);
+        node->children.push_back(childTermNode.first);
+        childTermNode.second->children.push_back(childTermNode.first);
     }
     node->unionArrow = node;
-    nodes[term] = node;
+    nodes[pTerm] = node;
     
-    return node;
+    return {pTerm, node};
 }
 
 void EufPool::AddEquality(const EufTerm& left, const EufTerm& right){

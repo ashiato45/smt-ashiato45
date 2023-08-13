@@ -81,6 +81,7 @@ struct EufPoolNode{
     std::vector<std::shared_ptr<EufTerm>> children;
     std::shared_ptr<EufPoolNode> unionArrow;
     std::unordered_set<EufTerm> parents;
+    int unionRank = 0;
 };
 
 
@@ -107,9 +108,9 @@ class EufPool{
     }
 
     private:
-    std::shared_ptr<EufTerm> FindRoot(std::shared_ptr<EufTerm>);
-    void Union(std::shared_ptr<EufTerm> a, std::shared_ptr<EufTerm> b);
-    bool IsSame(std::shared_ptr<EufTerm> a, std::shared_ptr<EufTerm> b);
+    std::shared_ptr<EufPoolNode> FindRoot(std::shared_ptr<EufPoolNode> node);
+    void Union(std::shared_ptr<EufPoolNode> a, std::shared_ptr<EufPoolNode> b);
+    bool IsSame(std::shared_ptr<EufPoolNode> a, std::shared_ptr<EufPoolNode> b);
 };
 
 // class EufTermTree{

@@ -65,7 +65,8 @@ std::shared_ptr<EufPoolNode> EufPool::Add(const EufTerm& term){
         node->children.push_back(childTermNode->term);
         childTermNode->children.push_back(childTermNode->term);
     }
-    node->unionArrow = node;
+    node->unionArrow = node;  // union-findのunionのarrowは、初期は自分をさす
+    node->unionRank = 0;
     nodes[pTerm] = node;
     
     return node;
@@ -96,12 +97,38 @@ bool EufPool::Equals(const EufTerm& left, const EufTerm& right){
 //     return ostr;
 // }
 
-std::shared_ptr<EufTerm> EufPool::FindRoot(std::shared_ptr<EufTerm>){
-    assert(0);
+std::shared_ptr<EufPoolNode> EufPool::FindRoot(std::shared_ptr<EufPoolNode> node){
+    if(node->unionArrow != node){
+        node->unionArrow = FindRoot(node->unionArrow);  // 経路圧縮
+    }
+
+    return node->unionArrow;
 }
-void EufPool::Union(std::shared_ptr<EufTerm> a, std::shared_ptr<EufTerm> b){
-    assert(0);
+
+void EufPool::Union(std::shared_ptr<EufPoolNode> a, std::shared_ptr<EufPoolNode> b){
+    auto rootA = FindRoot(a);
+    auto rootB = FindRoot(b);
+
+    if(rootA != rootB){
+        // BをAにつなぐとき、rank(A←B) = max(rank(A), rank(B) + 1)なので、
+        // rank(A) > rank(B)のときには rank(A←B) = rank(A)
+        // AをBにつなぐと rank(A→B) = rank(A) + 1なので、AがBよりでかいときにはBをAにつなぐ。
+        if(rootA->unionRank > rootB->unionRank){
+            // BをAにつなぐ
+            rootB->unionArrow = rootA;
+            if(rootA->unionRank == rootB->unionRank){
+                rootA->unionRank++;
+            }
+        }else{
+            rootA->unionArrow = rootB;
+            if(rootA->unionRank == rootB->unionRank){
+                rootB->unionRank++;
+            }
+        }
+
+    }
 }
-bool EufPool::IsSame(std::shared_ptr<EufTerm> a, std::shared_ptr<EufTerm> b){
-    assert(0);
+
+bool EufPool::IsSame(std::shared_ptr<EufPoolNode> a, std::shared_ptr<EufPoolNode> b){
+    return FindRoot(a) == FindRoot(b);
 }

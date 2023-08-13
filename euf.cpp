@@ -95,3 +95,13 @@ bool EufPool::Equals(const EufTerm& left, const EufTerm& right){
 
 //     return ostr;
 // }
+
+std::shared_ptr<EufTerm> EufPool::FindRoot(std::shared_ptr<EufTerm>){
+    assert(0);
+}
+void EufPool::Union(std::shared_ptr<EufTerm> a, std::shared_ptr<EufTerm> b){
+    assert(0);
+}
+bool EufPool::IsSame(std::shared_ptr<EufTerm> a, std::shared_ptr<EufTerm> b){
+    assert(0);
+}

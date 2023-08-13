@@ -107,6 +107,9 @@ class EufPool{
     }
 
     private:
+    std::shared_ptr<EufTerm> FindRoot(std::shared_ptr<EufTerm>);
+    void Union(std::shared_ptr<EufTerm> a, std::shared_ptr<EufTerm> b);
+    bool IsSame(std::shared_ptr<EufTerm> a, std::shared_ptr<EufTerm> b);
 };
 
 // class EufTermTree{

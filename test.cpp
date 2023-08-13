@@ -229,8 +229,32 @@ TEST(EufTest, PoolTest){
     EufPool pool;
     pool.Add(fab);
 
-    std::cout << pool;
+    // std::cout << pool;
 }
+
+TEST(EufTest, UnionFind){
+    EufPool pool;
+
+    auto a = EufSymbol::MakeAtom("a");
+    auto aNode = pool.Add(EufTerm(a));
+    auto b = EufSymbol::MakeAtom("b");
+    auto bNode = pool.Add(EufTerm(b));
+    auto c = EufSymbol::MakeAtom("c");
+    auto cNode = pool.Add(EufTerm(c));
+    auto d = EufSymbol::MakeAtom("d");
+    auto dNode = pool.Add(EufTerm(d));
+
+    pool.Union(aNode, bNode);
+    ASSERT_TRUE(pool.IsSame(aNode, bNode));
+    ASSERT_FALSE(pool.IsSame(aNode, cNode));
+    ASSERT_FALSE(pool.IsSame(aNode, dNode));
+    pool.Union(aNode, cNode);
+    ASSERT_TRUE(pool.IsSame(aNode, bNode));
+    ASSERT_TRUE(pool.IsSame(aNode, cNode));
+    ASSERT_TRUE(pool.IsSame(bNode, cNode));
+    ASSERT_FALSE(pool.IsSame(aNode, dNode));
+}
+
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

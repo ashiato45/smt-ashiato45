@@ -8,6 +8,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include "gtest/gtest.h"
+
 class EufTerm;
 
 class EufSymbol{
@@ -107,6 +109,7 @@ class EufPool{
         return ostr;
     }
 
+    FRIEND_TEST(EufTest, UnionFind);
     private:
     std::shared_ptr<EufPoolNode> FindRoot(std::shared_ptr<EufPoolNode> node);
     void Union(std::shared_ptr<EufPoolNode> a, std::shared_ptr<EufPoolNode> b);

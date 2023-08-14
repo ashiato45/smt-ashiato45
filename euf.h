@@ -109,6 +109,8 @@ class EufPool{
         return ostr;
     }
 
+    std::unordered_set<std::shared_ptr<EufPoolNode>> CalcPredecessor(std::shared_ptr<EufPoolNode> node);
+
     FRIEND_TEST(EufTest, UnionFind);
     private:
     std::shared_ptr<EufPoolNode> FindRoot(std::shared_ptr<EufPoolNode> node);

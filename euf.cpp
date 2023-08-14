@@ -1,4 +1,5 @@
 #include "euf.h"
+#include <algorithm>
 
 EufSymbol EufSymbol::MakeAtom(std::string name)
 {
@@ -84,6 +85,21 @@ void EufPool::AddEquality(const EufTerm& left, const EufTerm& right){
 bool EufPool::Equals(const EufTerm& left, const EufTerm& right){
     assert(0);
 }
+
+std::unordered_set<std::shared_ptr<EufPoolNode>> EufPool::CalcPredecessor(std::shared_ptr<EufPoolNode> node){
+    std::unordered_set<std::shared_ptr<EufPoolNode>> res;
+    auto repr = FindRoot(node);
+    for(auto& i: nodes){
+        // iの子のうち、nodeと同じグループに属しているものがあれば、iはnodeのpredecesssor。
+        auto& children = i.second->children;
+        if(std::any_of(children.begin(), children.end(), [](auto& child){return IsSame(child, node);})){
+            res.emplace(i);
+        }
+    }   
+
+    return res;
+}
+
 
 // std::ostream& EufPool::operator<<(std::ostream& ostr, EufPool pool){
 //     ostr << "digraph graphname{" << std::endl;

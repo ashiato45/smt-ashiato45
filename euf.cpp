@@ -88,14 +88,14 @@ bool EufPool::Equals(const EufTerm& left, const EufTerm& right){
 
 std::unordered_set<std::shared_ptr<EufPoolNode>> EufPool::CalcPredecessor(std::shared_ptr<EufPoolNode> node){
     std::unordered_set<std::shared_ptr<EufPoolNode>> res;
-    // auto repr = FindRoot(node);
-    // for(auto& i: nodes){
-    //     // iの子のうち、nodeと同じグループに属しているものがあれば、iはnodeのpredecesssor。
-    //     auto& children = i.second->children;
-    //     if(std::any_of(children.begin(), children.end(), [&node](auto& child){return IsSame(child, node);})){
-    //         res.emplace(i);
-    //     }
-    // }   
+    auto repr = FindRoot(node);
+    for(auto i: nodes){
+        // iの子のうち、nodeと同じグループに属しているものがあれば、iはnodeのpredecesssor。
+        auto& children = i.second->children;
+        if(std::any_of(children.begin(), children.end(), [this, &node](std::shared_ptr<EufPoolNode> child){return IsSame(child, node);})){
+            res.insert(i.second);
+        }
+    }   
 
     return res;
 }

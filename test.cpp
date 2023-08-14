@@ -229,7 +229,7 @@ TEST(EufTest, PoolTest){
     EufPool pool;
     pool.Add(fab);
 
-    // std::cout << pool;
+    std::cout << pool;
 }
 
 TEST(EufTest, PoolTest2){

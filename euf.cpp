@@ -64,7 +64,7 @@ std::shared_ptr<EufPoolNode> EufPool::Add(const EufTerm& term){
     for(auto& i: term.args){
         auto childTermNode = Add(i);
         node->children.push_back(childTermNode);
-        childTermNode->children.push_back(childTermNode);
+        // childTermNode->children.push_back(childTermNode);
     }
     node->unionArrow = node;  // union-findのunionのarrowは、初期は自分をさす
     node->unionRank = 0;

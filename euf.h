@@ -80,7 +80,7 @@ template<> struct std::hash<EufTerm>{
 
 struct EufPoolNode{
     std::shared_ptr<EufTerm> term;
-    std::vector<std::shared_ptr<EufTerm>> children;
+    std::vector<std::shared_ptr<EufPoolNode>> children;
     std::shared_ptr<EufPoolNode> unionArrow;
     std::unordered_set<EufTerm> parents;
     int unionRank = 0;
@@ -101,7 +101,7 @@ class EufPool{
         ostr << "digraph graphname{" << std::endl;
         for(auto& i: pool.nodes){
             for(auto& j: i.second->children){
-                ostr << "'" << i.first->Print() << "' -> '" << j->Print() << "';" << std::endl;
+                ostr << "'" << i.first->Print() << "' -> '" << j->term->Print() << "';" << std::endl;
             }
         }
         ostr << "}";

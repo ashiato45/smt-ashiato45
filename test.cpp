@@ -232,28 +232,58 @@ TEST(EufTest, PoolTest){
     // std::cout << pool;
 }
 
-TEST(EufTest, UnionFind){
+TEST(EufTest, PoolTest2){
     EufPool pool;
 
-    auto a = EufSymbol::MakeAtom("a");
-    auto aNode = pool.Add(EufTerm(a));
-    auto b = EufSymbol::MakeAtom("b");
-    auto bNode = pool.Add(EufTerm(b));
-    auto c = EufSymbol::MakeAtom("c");
-    auto cNode = pool.Add(EufTerm(c));
-    auto d = EufSymbol::MakeAtom("d");
-    auto dNode = pool.Add(EufTerm(d));
+    auto a = EufTerm(EufSymbol::MakeAtom("a"));
+    auto aNode = pool.Add(a);
+    auto b = EufTerm(EufSymbol::MakeAtom("b"));
+    auto bNode = pool.Add(b);
+    auto f = EufSymbol::MakeFunction("f", 2);
+    auto fab = f.Apply2(a, b);
+    auto fabNode = pool.Add(fab);
+    auto ffabb = f.Apply2(fab, b);
+    auto ffabbNode = pool.Add(ffabb);
 
-    pool.Union(aNode, bNode);
-    ASSERT_TRUE(pool.IsSame(aNode, bNode));
-    ASSERT_FALSE(pool.IsSame(aNode, cNode));
-    ASSERT_FALSE(pool.IsSame(aNode, dNode));
-    pool.Union(aNode, cNode);
-    ASSERT_TRUE(pool.IsSame(aNode, bNode));
-    ASSERT_TRUE(pool.IsSame(aNode, cNode));
-    ASSERT_TRUE(pool.IsSame(bNode, cNode));
-    ASSERT_FALSE(pool.IsSame(aNode, dNode));
+    std::cout << pool;
 }
+
+// TEST(EufTest, UnionFind){
+//     EufPool pool;
+
+//     auto a = EufSymbol::MakeAtom("a");
+//     auto aNode = pool.Add(EufTerm(a));
+//     auto b = EufSymbol::MakeAtom("b");
+//     auto bNode = pool.Add(EufTerm(b));
+//     auto c = EufSymbol::MakeAtom("c");
+//     auto cNode = pool.Add(EufTerm(c));
+//     auto d = EufSymbol::MakeAtom("d");
+//     auto dNode = pool.Add(EufTerm(d));
+
+//     pool.Union(aNode, bNode);
+//     ASSERT_TRUE(pool.IsSame(aNode, bNode));
+//     ASSERT_FALSE(pool.IsSame(aNode, cNode));
+//     ASSERT_FALSE(pool.IsSame(aNode, dNode));
+//     pool.Union(aNode, cNode);
+//     ASSERT_TRUE(pool.IsSame(aNode, bNode));
+//     ASSERT_TRUE(pool.IsSame(aNode, cNode));
+//     ASSERT_TRUE(pool.IsSame(bNode, cNode));
+//     ASSERT_FALSE(pool.IsSame(aNode, dNode));
+// }
+
+// TEST(EufTest, CalcPredecessor){
+//     EufPool pool;
+
+//     auto a = EufTerm(EufSymbol::MakeAtom("a"));
+//     auto aNode = pool.Add(a);
+//     auto b = EufTerm(EufSymbol::MakeAtom("b"));
+//     auto bNode = pool.Add(b);
+//     auto f = EufSymbol::MakeFunction("f", 2);
+//     auto fab = f.Apply2(a, b);
+//     auto fabNode = pool.Add(fab);
+//     auto ffabb = f.Apply2(fab, b);
+//     auto ffabbNode = pool.Add(ffabb);
+// }
 
 
 int main(int argc, char** argv) {

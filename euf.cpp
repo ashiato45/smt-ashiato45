@@ -63,8 +63,8 @@ std::shared_ptr<EufPoolNode> EufPool::Add(const EufTerm& term){
     node->term = pTerm;
     for(auto& i: term.args){
         auto childTermNode = Add(i);
-        node->children.push_back(childTermNode->term);
-        childTermNode->children.push_back(childTermNode->term);
+        node->children.push_back(childTermNode);
+        childTermNode->children.push_back(childTermNode);
     }
     node->unionArrow = node;  // union-findのunionのarrowは、初期は自分をさす
     node->unionRank = 0;
@@ -88,14 +88,14 @@ bool EufPool::Equals(const EufTerm& left, const EufTerm& right){
 
 std::unordered_set<std::shared_ptr<EufPoolNode>> EufPool::CalcPredecessor(std::shared_ptr<EufPoolNode> node){
     std::unordered_set<std::shared_ptr<EufPoolNode>> res;
-    auto repr = FindRoot(node);
-    for(auto& i: nodes){
-        // iの子のうち、nodeと同じグループに属しているものがあれば、iはnodeのpredecesssor。
-        auto& children = i.second->children;
-        if(std::any_of(children.begin(), children.end(), [](auto& child){return IsSame(child, node);})){
-            res.emplace(i);
-        }
-    }   
+    // auto repr = FindRoot(node);
+    // for(auto& i: nodes){
+    //     // iの子のうち、nodeと同じグループに属しているものがあれば、iはnodeのpredecesssor。
+    //     auto& children = i.second->children;
+    //     if(std::any_of(children.begin(), children.end(), [&node](auto& child){return IsSame(child, node);})){
+    //         res.emplace(i);
+    //     }
+    // }   
 
     return res;
 }

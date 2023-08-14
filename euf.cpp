@@ -22,13 +22,6 @@ EufTerm EufSymbol::Apply2(EufTerm x, EufTerm y){
     return EufTerm(*this, args);
 }
 
-// explicit EufTerm(EufSymbol x){
-
-// }
-
-// EufTerm(EufSymbol f, std::vector<EufTerm> args);
-
-
 std::string EufTerm::Print() const
 {
     // 項を作る
@@ -99,19 +92,6 @@ std::unordered_set<std::shared_ptr<EufPoolNode>> EufPool::CalcPredecessor(std::s
 
     return res;
 }
-
-
-// std::ostream& EufPool::operator<<(std::ostream& ostr, EufPool pool){
-//     ostr << "digraph graphname{" << std::endl;
-//     for(auto& i: pool.nodes){
-//         for(auto& j: i.second->children){
-//             ostr << "'" << i.first.Print() << "' -> '" << j.Print() << "';" << std::endl;
-//         }
-//     }
-//     ostr << "}";
-
-//     return ostr;
-// }
 
 std::shared_ptr<EufPoolNode> EufPool::FindRoot(std::shared_ptr<EufPoolNode> node){
     if(node->unionArrow != node){

@@ -85,6 +85,22 @@ bool EufPool::Equals(const EufTerm& left, const EufTerm& right){
     assert(0);
 }
 
+void EufPool::Merge(const EufTerm& left, const EufTerm& right){
+    auto leftNode = nodes[terms[left]];
+    auto rightNode = nodes[terms[right]];
+
+    Merge(leftNode, rightNode);
+}
+
+void EufPool::Merge(std::shared_ptr<EufPoolNode> left, std::shared_ptr<EufPoolNode> right){
+    if(FindRoot(left) == FindRoot(right)){
+        return;
+    }
+
+    // auto preLeft = calc
+}
+
+
 // std::ostream& EufPool::operator<<(std::ostream& ostr, EufPool pool){
 //     ostr << "digraph graphname{" << std::endl;
 //     for(auto& i: pool.nodes){

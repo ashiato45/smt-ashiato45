@@ -96,6 +96,8 @@ class EufPool{
     std::shared_ptr<EufPoolNode> Add(const EufTerm& term);
     void AddEquality(const EufTerm& left, const EufTerm& right);
     bool Equals(const EufTerm& left, const EufTerm& right);
+    void Merge(const EufTerm& left, const EufTerm& right);
+    void Merge(std::shared_ptr<EufPoolNode> left, std::shared_ptr<EufPoolNode> right);
 
     friend std::ostream& operator<<(std::ostream& ostr, EufPool pool){
         ostr << "digraph graphname{" << std::endl;

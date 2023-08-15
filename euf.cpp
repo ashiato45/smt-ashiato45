@@ -89,9 +89,35 @@ std::unordered_set<std::shared_ptr<EufPoolNode>> EufPool::CalcPredecessor(std::s
             res.insert(i.second);
         }
     }   
-
     return res;
 }
+
+
+void EufPool::Merge(const EufTerm& left, const EufTerm& right){
+    auto leftNode = nodes[terms[left]];
+    auto rightNode = nodes[terms[right]];
+
+    Merge(leftNode, rightNode);
+}
+
+void EufPool::Merge(std::shared_ptr<EufPoolNode> left, std::shared_ptr<EufPoolNode> right){
+    if(FindRoot(left) == FindRoot(right)){
+        return;
+    }
+
+    // auto preLeft = calc
+}
+
+
+// std::ostream& EufPool::operator<<(std::ostream& ostr, EufPool pool){
+//     ostr << "digraph graphname{" << std::endl;
+//     for(auto& i: pool.nodes){
+//         for(auto& j: i.second->children){
+//             ostr << "'" << i.first.Print() << "' -> '" << j.Print() << "';" << std::endl;
+//         }
+//     }
+//     ostr << "}";
+
 
 std::shared_ptr<EufPoolNode> EufPool::FindRoot(std::shared_ptr<EufPoolNode> node){
     if(node->unionArrow != node){

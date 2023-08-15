@@ -105,19 +105,19 @@ void EufPool::Merge(std::shared_ptr<EufPoolNode> left, std::shared_ptr<EufPoolNo
         return;
     }
 
-    // auto preLeft = calc
+    auto preLeft = CalcPredecessor(left);
+    auto preRight = CalcPredecessor(right);
+
+    Union(left, right);
+
+    for(auto& x: preLeft){
+        for(auto& y: preRight){
+            if(!IsSame(x, y) && Congruent(x, y)){
+                Merge(x, y);
+            }
+        }
+    }
 }
-
-
-// std::ostream& EufPool::operator<<(std::ostream& ostr, EufPool pool){
-//     ostr << "digraph graphname{" << std::endl;
-//     for(auto& i: pool.nodes){
-//         for(auto& j: i.second->children){
-//             ostr << "'" << i.first.Print() << "' -> '" << j.Print() << "';" << std::endl;
-//         }
-//     }
-//     ostr << "}";
-
 
 std::shared_ptr<EufPoolNode> EufPool::FindRoot(std::shared_ptr<EufPoolNode> node){
     if(node->unionArrow != node){
@@ -153,4 +153,25 @@ void EufPool::Union(std::shared_ptr<EufPoolNode> a, std::shared_ptr<EufPoolNode>
 
 bool EufPool::IsSame(std::shared_ptr<EufPoolNode> a, std::shared_ptr<EufPoolNode> b){
     return FindRoot(a) == FindRoot(b);
+}
+
+bool EufPool::Congruent(std::shared_ptr<EufPoolNode> a, std::shared_ptr<EufPoolNode> b){
+    if(a->term->symbol != b->term->symbol){
+        return false;  // 2つがそもそも違うシンボルならcongruentではない
+    }
+
+    if(a->term->args.size() != b->term->args.size()){
+        return false;  // シンボルがおなじでも、オペランドの数が違うならcongruentでない
+    }
+
+    // 第i引数同士に等号があるか？1個でもちがうならだめ。
+    for(int i=0; i < a->term->args.size(); i++){
+        auto& ai = a->children[i];
+        auto& bi = b->children[i];
+        if(!IsSame(ai, bi)){
+            return false;
+        }
+    }
+
+    return true;
 }

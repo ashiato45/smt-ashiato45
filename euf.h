@@ -109,7 +109,7 @@ class EufPool{
             }
 
             if(node->unionArrow != node){
-                ostr << "'" << node->term->Print() << "' -> '" << node->unionArrow->term->Print() << "' [style=solid];" << std::endl;
+                ostr << "'" << node->term->Print() << "' -> '" << node->unionArrow->term->Print() << "' [style=dotted];" << std::endl;
             }
         }
         ostr << "}";

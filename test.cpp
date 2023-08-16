@@ -301,6 +301,24 @@ TEST(EufTest, CalcPredecessor){
 
 }
 
+TEST(EufTest, Merge){
+    EufPool pool;
+
+    auto a = EufTerm(EufSymbol::MakeAtom("a"));
+    auto aNode = pool.Add(a);
+    auto b = EufTerm(EufSymbol::MakeAtom("b"));
+    auto bNode = pool.Add(b);
+    auto f = EufSymbol::MakeFunction("f", 2);
+    auto fab = f.Apply2(a, b);
+    auto fabNode = pool.Add(fab);
+    auto ffabb = f.Apply2(fab, b);
+    auto ffabbNode = pool.Add(ffabb);
+
+    pool.Merge(fabNode, aNode);
+
+
+    std::cout << pool;
+}
 
 
 int main(int argc, char** argv) {

@@ -101,9 +101,15 @@ class EufPool{
 
     friend std::ostream& operator<<(std::ostream& ostr, EufPool pool){
         ostr << "digraph graphname{" << std::endl;
+        // ノードをつくる
         for(auto& i: pool.nodes){
-            for(auto& j: i.second->children){
-                ostr << "'" << i.first->Print() << "' -> '" << j->term->Print() << "';" << std::endl;
+            auto& node = i.second;
+            for(auto& j: node->children){
+                ostr << "'" << node->term->Print() << "' -> '" << j->term->Print() << "';" << std::endl;
+            }
+
+            if(node->unionArrow != node){
+                ostr << "'" << node->term->Print() << "' -> '" << node->unionArrow->term->Print() << "' [style=solid];" << std::endl;
             }
         }
         ostr << "}";

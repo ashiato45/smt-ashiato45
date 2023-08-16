@@ -104,12 +104,14 @@ class EufPool{
         // ノードをつくる
         for(auto& i: pool.nodes){
             auto& node = i.second;
+            int n = 1;
             for(auto& j: node->children){
-                ostr << "'" << node->term->Print() << "' -> '" << j->term->Print() << "';" << std::endl;
+                ostr << "\"" << node->term->Print() << "\" -> \"" << j->term->Print() << "\" [label=" << n << "];" << std::endl;
+                n++;
             }
 
             if(node->unionArrow != node){
-                ostr << "'" << node->term->Print() << "' -> '" << node->unionArrow->term->Print() << "' [style=dotted];" << std::endl;
+                ostr << "\"" << node->term->Print() << "\" -> \"" << node->unionArrow->term->Print() << "\" [style=dotted];" << std::endl;
             }
         }
         ostr << "}";

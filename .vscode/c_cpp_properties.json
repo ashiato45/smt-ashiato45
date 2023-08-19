@@ -1,0 +1,10 @@
+{
+    "configurations": [
+        {
+            "name": "wsl",
+            "cppStandard": "c++20",
+            "intelliSenseMode": "gcc-x64",
+        }
+    ],
+    "version": 4
+}

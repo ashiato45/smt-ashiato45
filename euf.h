@@ -7,6 +7,9 @@
 #include <memory>
 #include <unordered_map>
 #include <unordered_set>
+#include <iterator>
+#include <concepts>
+#include <ranges>
 
 #include "gtest/gtest.h"
 
@@ -128,6 +131,41 @@ class EufPool{
     bool IsSame(std::shared_ptr<EufPoolNode> a, std::shared_ptr<EufPoolNode> b);
     bool Congruent(std::shared_ptr<EufPoolNode> a, std::shared_ptr<EufPoolNode> b);
 };
+
+struct Atom{
+    bool equality = true;  // trueのとき等式
+    EufTerm left;
+    EufTerm right;
+};
+
+
+template <typename T>
+concept AtomContainer = std::ranges::input_range<T> && std::same_as<std::ranges::range_value_t<T>, Atom>;
+
+template<AtomContainer Container>
+bool IsSatisfiable(const Container& atoms){
+    // return false;
+    EufPool pool;
+    std::vector<Atom> unsats;
+
+    for(const Atom& atom: atoms){
+        if(atom.equality){
+            auto nLeft = pool.Add(atom.left);
+            auto nRight = pool.Add(atom.right);
+            pool.Merge(nLeft, nRight);
+        }else{
+            unsats.push_back(atom);
+        }
+    }
+
+    for(auto i&: unsats){
+        if(pool.IsSame(i.left, i.right)){
+            return false;
+        }
+    }
+    
+    return true;
+}
 
 // class EufTermTree{
 //     public:

@@ -286,14 +286,14 @@ TEST(EufTest, CalcPredecessor){
 
     {
         auto pSet = pool.CalcPredecessor(aNode);
-        typeof(pSet) pSetExpected;
+        decltype(pSet) pSetExpected;
         pSetExpected.insert(fabNode);
         ASSERT_EQ(pSet, pSetExpected);
     }
 
     {
         auto pSet = pool.CalcPredecessor(bNode);
-        typeof(pSet) pSetExpected;
+        decltype(pSet) pSetExpected;
         pSetExpected.insert(fabNode);
         pSetExpected.insert(ffabbNode);
         ASSERT_EQ(pSet, pSetExpected);

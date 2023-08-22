@@ -76,7 +76,9 @@ void EufPool::AddEquality(const EufTerm& left, const EufTerm& right){
 }
 
 bool EufPool::Equals(const EufTerm& left, const EufTerm& right){
-    assert(0);
+    auto nLeft = nodes[terms[left]];
+    auto nRight = nodes[terms[right]];
+    return IsSame(nLeft, nRight);
 }
 
 std::unordered_set<std::shared_ptr<EufPoolNode>> EufPool::CalcPredecessor(std::shared_ptr<EufPoolNode> node){

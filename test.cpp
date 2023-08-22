@@ -320,6 +320,24 @@ TEST(EufTest, Merge){
     std::cout << pool;
 }
 
+TEST(EufTest, IsSatisfiable){
+    std::vector<Atom> atoms;
+    auto a = EufTerm(EufSymbol::MakeAtom("a"));
+    auto b = EufTerm(EufSymbol::MakeAtom("b"));
+    auto f = EufSymbol::MakeFunction("f", 2);
+    auto fab = f.Apply2(a, b);
+    auto ffabb = f.Apply2(fab, b);
+
+    atoms.push_back({true, fab, a});
+    atoms.push_back({false, ffabb, a});
+
+    auto res = IsSatisfiable(atoms);
+    std::cout << res.first << std::endl;
+    std::cout << res.second << std::endl;
+
+    ASSERT_FALSE(res.first);
+}
+
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

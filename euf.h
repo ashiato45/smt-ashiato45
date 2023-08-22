@@ -143,28 +143,35 @@ template <typename T>
 concept AtomContainer = std::ranges::input_range<T> && std::same_as<std::ranges::range_value_t<T>, Atom>;
 
 template<AtomContainer Container>
-bool IsSatisfiable(const Container& atoms){
+std::pair<bool, EufPool> IsSatisfiable(const Container& atoms){
     // return false;
     EufPool pool;
     std::vector<Atom> unsats;
 
+    // 先に全部のtermを追加しておかないと伝播がうまくいかない
     for(const Atom& atom: atoms){
+        pool.Add(atom.left);
+        pool.Add(atom.right);
+    }
+
+
+    for(const Atom& atom: atoms){
+        auto nLeft = pool.Add(atom.left);
+        auto nRight = pool.Add(atom.right);
         if(atom.equality){
-            auto nLeft = pool.Add(atom.left);
-            auto nRight = pool.Add(atom.right);
             pool.Merge(nLeft, nRight);
         }else{
             unsats.push_back(atom);
         }
     }
 
-    for(auto i&: unsats){
-        if(pool.IsSame(i.left, i.right)){
-            return false;
+    for(auto& i: unsats){
+        if(pool.Equals(i.left, i.right)){
+            return {false, pool};
         }
     }
-    
-    return true;
+
+    return {true, pool};
 }
 
 // class EufTermTree{

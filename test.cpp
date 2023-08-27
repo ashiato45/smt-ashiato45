@@ -59,7 +59,7 @@ TEST(FooTest, MinisatTest) {
 }
 
 // solverの側ではvarNum分の変数が作られていることを仮定する。
-FormulaPtr MakeRandomFormula(std::mt19937& engine, int varNum, int maxDepth,
+std::shared_ptr<FormulaPred> MakeRandomFormula(std::mt19937& engine, int varNum, int maxDepth,
                              int depth = 0) {
     auto r = std::uniform_int_distribution<>(0, 3)(engine);
     if (depth >= maxDepth) {
@@ -67,22 +67,22 @@ FormulaPtr MakeRandomFormula(std::mt19937& engine, int varNum, int maxDepth,
     }
     switch (r) {
         case 0: {
-            return Formula::MakeNot(
+            return FormulaPred::MakeNot(
                 MakeRandomFormula(engine, varNum, maxDepth, depth + 1));
         } break;
         case 1: {
-            return Formula::MakeAnd(
+            return FormulaPred::MakeAnd(
                 MakeRandomFormula(engine, varNum, maxDepth, depth + 1),
                 MakeRandomFormula(engine, varNum, maxDepth, depth + 1));
         } break;
         case 2: {
-            return Formula::MakeOr(
+            return FormulaPred::MakeOr(
                 MakeRandomFormula(engine, varNum, maxDepth, depth + 1),
                 MakeRandomFormula(engine, varNum, maxDepth, depth + 1));
         } break;
         default: {
             auto i = std::uniform_int_distribution<>(0, varNum - 1)(engine);
-            return Formula::MakeAtom(i);
+            return FormulaPred::MakeAtom(i);
         } break;
     }
 }

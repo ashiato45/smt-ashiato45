@@ -13,31 +13,34 @@ enum Op{
     Op_Count
 };
 
-struct Formula;
-using FormulaPtr = std::shared_ptr<Formula>;
-
+template <typename T>
 struct Formula
 {
     Op op;
     Minisat::Var atom = -1;
     std::vector<std::shared_ptr<Formula>> terms;
 
-    static FormulaPtr MakeAtom(Minisat::Var atom);
-    static FormulaPtr MakeAnd(FormulaPtr f1, FormulaPtr f2);
-    static FormulaPtr MakeOr(FormulaPtr f1, FormulaPtr f2);
-    static FormulaPtr MakeNot(FormulaPtr f1);
+    static std::shared_ptr<Formula> MakeAtom(Minisat::Var atom);
+    static std::shared_ptr<Formula> MakeAnd(std::shared_ptr<Formula> f1, std::shared_ptr<Formula> f2);
+    static std::shared_ptr<Formula> MakeOr(std::shared_ptr<Formula> f1, std::shared_ptr<Formula> f2);
+    static std::shared_ptr<Formula> MakeNot(std::shared_ptr<Formula> f1);
 
     void AppendAsString(std::ostringstream& oss);
-        std::string ToString();
+    std::string ToString();
 
     bool Eval(std::map<Minisat::Var, bool>& assignment);
 };
 
+template
+struct Formula<Minisat::Var>;
+
+using FormulaPred = Formula<Minisat::Var>;
+
 // 適用した後、そのformulaはリテラルになるように変形する。変形したものはsubsにつっこむ。
 // rootだけ自分で書き換えができないので注意。また、2回以上のNotもそのまま返している。
-Minisat::Var ApplyTseitinHelp(FormulaPtr formula, Minisat::Solver& solver, std::map<Minisat::Var, FormulaPtr>& subs);
+Minisat::Var ApplyTseitinHelp(std::shared_ptr<FormulaPred> formula, Minisat::Solver& solver, std::map<Minisat::Var, std::shared_ptr<FormulaPred>>& subs);
 // こちらはできあがりをかえす。formulaは破壊される。
-FormulaPtr ApplyTseitin(FormulaPtr formula, Minisat::Solver& solver, std::map<Minisat::Var, FormulaPtr>& subs);
+std::shared_ptr<FormulaPred> ApplyTseitin(std::shared_ptr<FormulaPred> formula, Minisat::Solver& solver, std::map<Minisat::Var, std::shared_ptr<FormulaPred>>& subs);
 
 // 実行後formulaは破壊されるので注意。
-void PutIntoSolver(FormulaPtr formula, Minisat::Solver& solver);
+void PutIntoSolver(std::shared_ptr<FormulaPred> formula, Minisat::Solver& solver);

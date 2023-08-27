@@ -4,6 +4,9 @@
             "name": "wsl",
             "cppStandard": "c++20",
             "intelliSenseMode": "gcc-x64",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ]
         }
     ],
     "version": 4

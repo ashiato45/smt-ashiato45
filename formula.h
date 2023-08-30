@@ -17,10 +17,10 @@ template <typename T>
 struct Formula
 {
     Op op;
-    Minisat::Var atom = -1;
+    T atom;
     std::vector<std::shared_ptr<Formula>> terms;
 
-    static std::shared_ptr<Formula> MakeAtom(Minisat::Var atom);
+    static std::shared_ptr<Formula> MakeAtom(T atom);
     static std::shared_ptr<Formula> MakeAnd(std::shared_ptr<Formula> f1, std::shared_ptr<Formula> f2);
     static std::shared_ptr<Formula> MakeOr(std::shared_ptr<Formula> f1, std::shared_ptr<Formula> f2);
     static std::shared_ptr<Formula> MakeNot(std::shared_ptr<Formula> f1);
@@ -28,8 +28,16 @@ struct Formula
     void AppendAsString(std::ostringstream& oss);
     std::string ToString();
 
-    bool Eval(std::map<Minisat::Var, bool>& assignment);
+    bool Eval(std::map<T, bool>& assignment);
 };
+
+template <typename T>
+std::string Formula<T>::ToString()
+{
+    std::ostringstream oss;
+    AppendAsString(oss);
+    return oss.str();
+}
 
 template
 struct Formula<Minisat::Var>;

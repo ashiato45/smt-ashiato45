@@ -87,13 +87,7 @@ void FormulaPred::AppendAsString(std::ostringstream &oss)
     }
 }
 
-template<>
-std::string FormulaPred::ToString()
-{
-    std::ostringstream oss;
-    AppendAsString(oss);
-    return oss.str();
-}
+
 
 template<>
 bool FormulaPred::Eval(std::map<Minisat::Var, bool> &assignment)

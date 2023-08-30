@@ -1,3 +1,5 @@
+#pragma once
+
 #include "minisat/simp/SimpSolver.h"
 #include <memory>
 #include <vector>
@@ -30,6 +32,30 @@ struct Formula
 
     bool Eval(std::map<T, bool>& assignment);
 };
+
+template <typename T>
+std::shared_ptr<Formula<T>> Formula<T>::MakeAtom(T atom)
+{
+    return std::shared_ptr<Formula<T>>{new Formula<T>{Op::Op_Atom, atom, {}}};
+}
+
+template <typename T>
+std::shared_ptr<Formula<T>> Formula<T>::MakeAnd(std::shared_ptr<Formula<T>> f1, std::shared_ptr<Formula<T>> f2)
+{
+    return std::shared_ptr<Formula<T>>{new Formula<T>{Op::Op_And, {}, {f1, f2}}};
+}
+
+template <typename T>
+std::shared_ptr<Formula<T>> Formula<T>::MakeOr(std::shared_ptr<Formula<T>> f1, std::shared_ptr<Formula<T>> f2)
+{
+    return std::shared_ptr<Formula<T>>{new Formula<T>{Op::Op_Or, {}, {f1, f2}}};
+}
+
+template <typename T>
+std::shared_ptr<Formula<T>> Formula<T>::MakeNot(std::shared_ptr<Formula<T>> f1)
+{
+    return std::shared_ptr<Formula<T>>{new Formula<T>{Op::Op_Not, {}, {f1}}};
+}
 
 template <typename T>
 std::string Formula<T>::ToString()

@@ -321,7 +321,7 @@ TEST(EufTest, Merge){
 }
 
 TEST(EufTest, IsSatisfiable){
-    std::vector<Atom> atoms;
+    std::vector<EufAtom> atoms;
     auto a = EufTerm(EufSymbol::MakeAtom("a"));
     auto b = EufTerm(EufSymbol::MakeAtom("b"));
     auto f = EufSymbol::MakeFunction("f", 2);
@@ -338,6 +338,21 @@ TEST(EufTest, IsSatisfiable){
     ASSERT_FALSE(res.first);
 }
 
+TEST(EufTest, Print){
+    std::vector<EufAtom> atoms;
+    auto a = EufTerm(EufSymbol::MakeAtom("a"));
+    auto b = EufTerm(EufSymbol::MakeAtom("b"));
+    auto f = EufSymbol::MakeFunction("f", 2);
+    auto fab = f.Apply2(a, b);
+    auto ffabb = f.Apply2(fab, b);
+
+    auto form1 = EufFormula::MakeAtom({true, fab, a});
+    auto form2 = EufFormula::MakeAtom({false, ffabb, a});
+    
+    std::cout << form1->ToString() << std::endl;
+    std::cout << form2->ToString() << std::endl;
+
+}
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

@@ -11,31 +11,6 @@ void AddingLog(std::string s)
 }
 
 template<>
-std::shared_ptr<FormulaPred> FormulaPred::MakeAtom(Minisat::Var atom)
-{
-    return std::shared_ptr<FormulaPred>{new FormulaPred{Op::Op_Atom, atom, {}}};
-}
-
-template<>
-std::shared_ptr<FormulaPred> FormulaPred::MakeAnd(std::shared_ptr<FormulaPred> f1, std::shared_ptr<FormulaPred> f2)
-{
-    return std::shared_ptr<FormulaPred>{new FormulaPred{Op::Op_And, {}, {f1, f2}}};
-}
-
-template<>
-std::shared_ptr<FormulaPred> FormulaPred::MakeOr(std::shared_ptr<FormulaPred> f1, std::shared_ptr<FormulaPred> f2)
-{
-    return std::shared_ptr<FormulaPred>{new FormulaPred{Op::Op_Or, {}, {f1, f2}}};
-}
-
-template<>
-std::shared_ptr<FormulaPred> FormulaPred::MakeNot(std::shared_ptr<FormulaPred> f1)
-{
-    return std::shared_ptr<FormulaPred>{new FormulaPred{Op::Op_Not, {}, {f1}}};
-}
-
-
-template<>
 void FormulaPred::AppendAsString(std::ostringstream &oss)
 {
     switch (op)

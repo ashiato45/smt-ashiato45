@@ -1,3 +1,5 @@
+#pragma once
+
 #include <string>
 #include <vector>
 #include <sstream>
@@ -12,6 +14,8 @@
 #include <ranges>
 
 #include "gtest/gtest.h"
+
+#include "formula.h"
 
 class EufTerm;
 
@@ -38,6 +42,8 @@ class EufTerm{
     public:
     EufSymbol symbol;
     std::vector<EufTerm> args;
+
+    EufTerm(): symbol(EufSymbol::MakeAtom("")), args(0){};
 
     explicit EufTerm(EufSymbol x): 
     symbol(x)
@@ -132,7 +138,7 @@ class EufPool{
     bool Congruent(std::shared_ptr<EufPoolNode> a, std::shared_ptr<EufPoolNode> b);
 };
 
-struct Atom{
+struct EufAtom{
     bool equality = true;  // trueのとき等式
     EufTerm left;
     EufTerm right;
@@ -140,22 +146,22 @@ struct Atom{
 
 
 template <typename T>
-concept AtomContainer = std::ranges::input_range<T> && std::same_as<std::ranges::range_value_t<T>, Atom>;
+concept AtomContainer = std::ranges::input_range<T> && std::same_as<std::ranges::range_value_t<T>, EufAtom>;
 
 template<AtomContainer Container>
 std::pair<bool, EufPool> IsSatisfiable(const Container& atoms){
     // return false;
     EufPool pool;
-    std::vector<Atom> unsats;
+    std::vector<EufAtom> unsats;
 
     // 先に全部のtermを追加しておかないと伝播がうまくいかない
-    for(const Atom& atom: atoms){
+    for(const EufAtom& atom: atoms){
         pool.Add(atom.left);
         pool.Add(atom.right);
     }
 
 
-    for(const Atom& atom: atoms){
+    for(const EufAtom& atom: atoms){
         auto nLeft = pool.Add(atom.left);
         auto nRight = pool.Add(atom.right);
         if(atom.equality){
@@ -173,6 +179,12 @@ std::pair<bool, EufPool> IsSatisfiable(const Container& atoms){
 
     return {true, pool};
 }
+
+
+template
+struct Formula<EufAtom>;
+
+using EufFormula = Formula<EufAtom>;
 
 // class EufTermTree{
 //     public:

@@ -186,6 +186,17 @@ struct Formula<EufAtom>;
 
 using EufFormula = Formula<EufAtom>;
 
+struct EufModel{
+    std::map<EufAtom, bool> assignment;
+};
+
+
+template<AtomContainer Container>
+std::pair<std::unordered_map<EufAtom, PropAtom>, std::unordered_map<PropAtom, EufAtom>> 
+MakeEufAtomDictionary(Container formulae);
+
+EufModel EufSolve(EufFormula formula);
+
 // class EufTermTree{
 //     public:
 

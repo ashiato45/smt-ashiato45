@@ -65,10 +65,12 @@ std::string Formula<T>::ToString()
     return oss.str();
 }
 
+using PropAtom = Minisat::Var;
+
 template
 struct Formula<Minisat::Var>;
 
-using FormulaPred = Formula<Minisat::Var>;
+using FormulaPred = Formula<Minisat::Var>;  // TODO: Predじゃないのであとでなんとかする
 
 // 適用した後、そのformulaはリテラルになるように変形する。変形したものはsubsにつっこむ。
 // rootだけ自分で書き換えができないので注意。また、2回以上のNotもそのまま返している。

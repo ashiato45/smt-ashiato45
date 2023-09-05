@@ -179,7 +179,7 @@ bool EufPool::Congruent(std::shared_ptr<EufPoolNode> a, std::shared_ptr<EufPoolN
 }
 
 template<>
-void EufFormula::AppendAsString(std::ostringstream& oss){
+void EufFormula::AppendAsString(std::ostringstream& oss) const{
     oss << atom.left.Print();
     if(atom.equality){
         oss << " == ";

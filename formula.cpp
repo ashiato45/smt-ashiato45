@@ -11,7 +11,7 @@ void AddingLog(std::string s)
 }
 
 template<>
-void PropFormula::AppendAsString(std::ostringstream &oss)
+void PropFormula::AppendAsString(std::ostringstream &oss) const
 {
     switch (op)
     {

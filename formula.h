@@ -30,8 +30,8 @@ struct Formula
     static std::shared_ptr<Formula> MakeNot(std::shared_ptr<Formula> f1);
     void Walk(std::function<void(Formula<T>&)> f);
 
-    void AppendAsString(std::ostringstream& oss);
-    std::string ToString();
+    void AppendAsString(std::ostringstream& oss) const;
+    std::string ToString() const;
 
     bool Eval(std::map<T, bool>& assignment);
 };
@@ -61,7 +61,7 @@ std::shared_ptr<Formula<T>> Formula<T>::MakeNot(std::shared_ptr<Formula<T>> f1)
 }
 
 template <typename T>
-std::string Formula<T>::ToString()
+std::string Formula<T>::ToString() const
 {
     std::ostringstream oss;
     AppendAsString(oss);

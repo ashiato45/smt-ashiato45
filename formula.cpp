@@ -11,7 +11,7 @@ void AddingLog(std::string s)
 }
 
 template<>
-void FormulaPred::AppendAsString(std::ostringstream &oss)
+void PropFormula::AppendAsString(std::ostringstream &oss)
 {
     switch (op)
     {
@@ -58,6 +58,7 @@ void FormulaPred::AppendAsString(std::ostringstream &oss)
     }
     break;
     default:
+        std::cout << op << std::endl;
         assert(0);
     }
 }
@@ -65,14 +66,14 @@ void FormulaPred::AppendAsString(std::ostringstream &oss)
 
 
 template<>
-bool FormulaPred::Eval(std::map<Minisat::Var, bool> &assignment)
+bool PropFormula::Eval(std::map<Minisat::Var, bool> &assignment)
 {
     switch (op)
     {
     case Op::Op_And:
     {
         return std::accumulate(terms.begin(), terms.end(), true,
-                               [&assignment](bool l, std::shared_ptr<FormulaPred> r)
+                               [&assignment](bool l, std::shared_ptr<PropFormula> r)
                                {
                                    return l && r->Eval(assignment);
                                });
@@ -93,7 +94,7 @@ bool FormulaPred::Eval(std::map<Minisat::Var, bool> &assignment)
     case Op::Op_Or:
     {
         return std::accumulate(terms.begin(), terms.end(), false,
-                               [&assignment](bool l, std::shared_ptr<FormulaPred> r)
+                               [&assignment](bool l, std::shared_ptr<PropFormula> r)
                                {
                                    return l || r->Eval(assignment);
                                });
@@ -104,8 +105,8 @@ bool FormulaPred::Eval(std::map<Minisat::Var, bool> &assignment)
     }
 }
 
-Minisat::Var ApplyTseitinHelp(std::shared_ptr<FormulaPred> formula, Minisat::Solver &solver,
-                              std::map<Minisat::Var, std::shared_ptr<FormulaPred>> &subs)
+Minisat::Var ApplyTseitinHelp(std::shared_ptr<PropFormula> formula, Minisat::Solver &solver,
+                              std::map<Minisat::Var, std::shared_ptr<PropFormula>> &subs)
 {
     switch (formula->op)
     {
@@ -124,7 +125,7 @@ Minisat::Var ApplyTseitinHelp(std::shared_ptr<FormulaPred> formula, Minisat::Sol
                 ApplyTseitinHelp(formula->terms[i], solver, subs);
             if (replacedVar >= 0)
             {
-                formula->terms[i] = FormulaPred::MakeAtom(replacedVar);
+                formula->terms[i] = PropFormula::MakeAtom(replacedVar);
             }
         }
         // このAnd節を置換して1文字にする
@@ -145,7 +146,7 @@ Minisat::Var ApplyTseitinHelp(std::shared_ptr<FormulaPred> formula, Minisat::Sol
             auto var = ApplyTseitinHelp(term, solver, subs);
             if (var >= 0)
             {
-                formula->terms[0] = FormulaPred::MakeAtom(var);
+                formula->terms[0] = PropFormula::MakeAtom(var);
             }
             return -1;
         }
@@ -176,7 +177,7 @@ Minisat::Var ApplyTseitinHelp(std::shared_ptr<FormulaPred> formula, Minisat::Sol
     }
 }
 
-std::shared_ptr<FormulaPred> RemoveDoubleNegationHelp(std::shared_ptr<FormulaPred> formula)
+std::shared_ptr<PropFormula> RemoveDoubleNegationHelp(std::shared_ptr<PropFormula> formula)
 {
     if (formula->op == Op::Op_Not)
     {
@@ -192,7 +193,7 @@ std::shared_ptr<FormulaPred> RemoveDoubleNegationHelp(std::shared_ptr<FormulaPre
     return formula;
 }
 
-std::shared_ptr<FormulaPred> RemoveDoubleNegation(std::shared_ptr<FormulaPred> formula)
+std::shared_ptr<PropFormula> RemoveDoubleNegation(std::shared_ptr<PropFormula> formula)
 {
     for (int i = 0; i < formula->terms.size(); i++)
     {
@@ -201,11 +202,11 @@ std::shared_ptr<FormulaPred> RemoveDoubleNegation(std::shared_ptr<FormulaPred> f
     return formula;
 }
 
-std::shared_ptr<FormulaPred> ApplyTseitin(std::shared_ptr<FormulaPred> formula, Minisat::Solver &solver,
-                        std::map<Minisat::Var, std::shared_ptr<FormulaPred>> &subs)
+std::shared_ptr<PropFormula> ApplyTseitin(std::shared_ptr<PropFormula> formula, Minisat::Solver &solver,
+                        std::map<Minisat::Var, std::shared_ptr<PropFormula>> &subs)
 {
     auto lastVar = ApplyTseitinHelp(formula, solver, subs);
-    auto res = (lastVar >= 0) ? FormulaPred::MakeAtom(lastVar) : formula;
+    auto res = (lastVar >= 0) ? PropFormula::MakeAtom(lastVar) : formula;
     res = RemoveDoubleNegation(res);
     for (auto i : subs)
     {
@@ -217,31 +218,31 @@ std::shared_ptr<FormulaPred> ApplyTseitin(std::shared_ptr<FormulaPred> formula, 
 
 // namespace {
 // struct HelpTseitinData {
-//     std::shared_ptr<FormulaPred> freshPos;
-//     std::shared_ptr<FormulaPred> freshNeg;
-//     std::vector<std::shared_ptr<FormulaPred>> insidePos;
-//     std::vector<std::shared_ptr<FormulaPred>> insideNeg;
+//     std::shared_ptr<PropFormula> freshPos;
+//     std::shared_ptr<PropFormula> freshNeg;
+//     std::vector<std::shared_ptr<PropFormula>> insidePos;
+//     std::vector<std::shared_ptr<PropFormula>> insideNeg;
 // };
 
-// HelpTseitinData HelpTseitin(std::shared_ptr<FormulaPred> f, Minisat::Solver& solver) {
+// HelpTseitinData HelpTseitin(std::shared_ptr<PropFormula> f, Minisat::Solver& solver) {
 //     assert(f->op == Op::Op_And || f->op == Op::Op_Or);
-//     auto freshPos = FormulaPred::MakeAtom(solver.newVar());
-//     auto freshNeg = FormulaPred::MakeNot(freshPos);
-//     std::vector<std::shared_ptr<FormulaPred>> insidePos(f->terms.size());
-//     std::vector<std::shared_ptr<FormulaPred>> insideNeg(f->terms.size());
+//     auto freshPos = PropFormula::MakeAtom(solver.newVar());
+//     auto freshNeg = PropFormula::MakeNot(freshPos);
+//     std::vector<std::shared_ptr<PropFormula>> insidePos(f->terms.size());
+//     std::vector<std::shared_ptr<PropFormula>> insideNeg(f->terms.size());
 //     std::transform(f->terms.begin(), f->terms.end(), insidePos.begin(),
-//                    [&solver](std::shared_ptr<FormulaPred> i) { return ApplyTseitin(i, solver);
+//                    [&solver](std::shared_ptr<PropFormula> i) { return ApplyTseitin(i, solver);
 //                    });
 //     std::transform(f->terms.begin(), f->terms.end(), insideNeg.begin(),
-//                    [&solver](std::shared_ptr<FormulaPred> i) {
-//                        return ApplyTseitin(FormulaPred::MakeNot(i), solver);
+//                    [&solver](std::shared_ptr<PropFormula> i) {
+//                        return ApplyTseitin(PropFormula::MakeNot(i), solver);
 //                    });
 
 //     return HelpTseitinData{freshPos, freshNeg, insidePos, insideNeg};
 // }
 // }  // namespace
 
-Minisat::Lit FormulaPred2MinisatLit(std::shared_ptr<FormulaPred> formula)
+Minisat::Lit PropFormula2MinisatLit(std::shared_ptr<PropFormula> formula)
 {
     switch (formula->op)
     {
@@ -272,7 +273,7 @@ Minisat::Lit FormulaPred2MinisatLit(std::shared_ptr<FormulaPred> formula)
     }
 }
 
-void AddSubstitutionToSolver(Minisat::Var freshVar, std::shared_ptr<FormulaPred> formula,
+void AddSubstitutionToSolver(Minisat::Var freshVar, std::shared_ptr<PropFormula> formula,
                              Minisat::Solver &solver)
 {
     switch (formula->op)
@@ -286,27 +287,27 @@ void AddSubstitutionToSolver(Minisat::Var freshVar, std::shared_ptr<FormulaPred>
         // ¬c∨b ∧ ¬a∨¬b∨c)になる。これを複数個に一般化する。
 
         // c部分
-        // AddingLog(FormulaPred::MakeAtom(freshVar)->ToString());
+        // AddingLog(PropFormula::MakeAtom(freshVar)->ToString());
         // solver.addClause(Minisat::Lit{freshVar});
 
         // ¬c∨a ∧¬c∨b
         // TODO: まずaがnegかもしれんというのを忘れてない
         for (auto i : formula->terms)
         {
-            AddingLog(FormulaPred::MakeOr(FormulaPred::MakeNot(FormulaPred::MakeAtom(freshVar)), i)->ToString());
+            AddingLog(PropFormula::MakeOr(PropFormula::MakeNot(PropFormula::MakeAtom(freshVar)), i)->ToString());
             solver.addClause(~Minisat::mkLit(freshVar),
-                             FormulaPred2MinisatLit(i));
+                             PropFormula2MinisatLit(i));
         }
 
         // ¬a∨¬b∨c 部分
         AddingLog("[start] ¬a∨¬b∨c part");
         Minisat::vec<Minisat::Lit> lits;
         lits.push(Minisat::mkLit(freshVar));
-        AddingLog(FormulaPred::MakeAtom(freshVar)->ToString());
+        AddingLog(PropFormula::MakeAtom(freshVar)->ToString());
         for (auto i : formula->terms)
         {
-            lits.push(~FormulaPred2MinisatLit(i));
-            AddingLog(FormulaPred::MakeNot(i)->ToString());
+            lits.push(~PropFormula2MinisatLit(i));
+            AddingLog(PropFormula::MakeNot(i)->ToString());
         }
         solver.addClause(lits);
         AddingLog("[end] ¬a∨¬b∨c part");
@@ -332,15 +333,15 @@ void AddSubstitutionToSolver(Minisat::Var freshVar, std::shared_ptr<FormulaPred>
         // ¬b∨c)になる。これを複数個に一般化する。
 
         // c部分
-        // AddingLog(FormulaPred::MakeAtom(freshVar)->ToString());
+        // AddingLog(PropFormula::MakeAtom(freshVar)->ToString());
         // solver.addClause(Minisat::Lit{freshVar});
 
         // ¬a∨c ∧ ¬b∨c 部分
         for (auto i : formula->terms)
         {
-            AddingLog(FormulaPred::MakeOr((FormulaPred::MakeAtom(freshVar)), FormulaPred::MakeNot(i))->ToString());
+            AddingLog(PropFormula::MakeOr((PropFormula::MakeAtom(freshVar)), PropFormula::MakeNot(i))->ToString());
             solver.addClause(Minisat::mkLit(freshVar),
-                             ~FormulaPred2MinisatLit(i));
+                             ~PropFormula2MinisatLit(i));
         }
 
         // ¬c∨a∨b 部分
@@ -348,10 +349,10 @@ void AddSubstitutionToSolver(Minisat::Var freshVar, std::shared_ptr<FormulaPred>
 
         Minisat::vec<Minisat::Lit> lits;
         lits.push(~Minisat::mkLit(freshVar));
-        AddingLog(FormulaPred::MakeNot(FormulaPred::MakeAtom(freshVar))->ToString());
+        AddingLog(PropFormula::MakeNot(PropFormula::MakeAtom(freshVar))->ToString());
         for (auto i : formula->terms)
         {
-            lits.push(FormulaPred2MinisatLit(i));
+            lits.push(PropFormula2MinisatLit(i));
             AddingLog(i->ToString());
         }
         solver.addClause(lits);
@@ -363,14 +364,14 @@ void AddSubstitutionToSolver(Minisat::Var freshVar, std::shared_ptr<FormulaPred>
     }
 }
 
-void PutIntoSolver(std::shared_ptr<FormulaPred> formula, Minisat::Solver &solver)
+void PutIntoSolver(std::shared_ptr<PropFormula> formula, Minisat::Solver &solver)
 {
-    std::map<Minisat::Var, std::shared_ptr<FormulaPred>> subs;
+    std::map<Minisat::Var, std::shared_ptr<PropFormula>> subs;
     auto transformed = ApplyTseitin(formula, solver, subs);
 
     // formula本体を登録。これはリテラルのはず。
     AddingLog(transformed->ToString());
-    solver.addClause(FormulaPred2MinisatLit(transformed));
+    solver.addClause(PropFormula2MinisatLit(transformed));
 
     // 置換部分を登録
     for (auto i : subs)

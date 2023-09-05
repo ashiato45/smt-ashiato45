@@ -59,7 +59,7 @@ TEST(FooTest, MinisatTest) {
 }
 
 // solverの側ではvarNum分の変数が作られていることを仮定する。
-std::shared_ptr<FormulaPred> MakeRandomFormula(std::mt19937& engine, int varNum, int maxDepth,
+std::shared_ptr<PropFormula> MakeRandomFormula(std::mt19937& engine, int varNum, int maxDepth,
                              int depth = 0) {
     auto r = std::uniform_int_distribution<>(0, 3)(engine);
     if (depth >= maxDepth) {
@@ -67,22 +67,22 @@ std::shared_ptr<FormulaPred> MakeRandomFormula(std::mt19937& engine, int varNum,
     }
     switch (r) {
         case 0: {
-            return FormulaPred::MakeNot(
+            return PropFormula::MakeNot(
                 MakeRandomFormula(engine, varNum, maxDepth, depth + 1));
         } break;
         case 1: {
-            return FormulaPred::MakeAnd(
+            return PropFormula::MakeAnd(
                 MakeRandomFormula(engine, varNum, maxDepth, depth + 1),
                 MakeRandomFormula(engine, varNum, maxDepth, depth + 1));
         } break;
         case 2: {
-            return FormulaPred::MakeOr(
+            return PropFormula::MakeOr(
                 MakeRandomFormula(engine, varNum, maxDepth, depth + 1),
                 MakeRandomFormula(engine, varNum, maxDepth, depth + 1));
         } break;
         default: {
             auto i = std::uniform_int_distribution<>(0, varNum - 1)(engine);
-            return FormulaPred::MakeAtom(i);
+            return PropFormula::MakeAtom(i);
         } break;
     }
 }
@@ -353,6 +353,22 @@ TEST(EufTest, Print){
     std::cout << form2->ToString() << std::endl;
 
 }
+
+TEST(FooTest, Walk) {
+    auto a = PropFormula::MakeAtom(1);
+    auto b = PropFormula::MakeAtom(2);
+    auto ab = PropFormula::MakeAnd(a, b);
+    auto c = PropFormula::MakeAtom(3);
+    auto d = PropFormula::MakeAtom(4);
+    auto d1 = PropFormula::MakeNot(d);
+    auto cd1 = PropFormula::MakeAnd(c, d1);
+    auto abcd1 = PropFormula::MakeOr(ab, cd1);
+
+    abcd1->Walk([](PropFormula& form){
+        std::cout << "hoge: " << form.ToString() << std::endl;
+    });
+}
+
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

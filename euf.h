@@ -146,9 +146,9 @@ struct EufAtom{
 
 
 template <typename T>
-concept AtomContainer = std::ranges::input_range<T> && std::same_as<std::ranges::range_value_t<T>, EufAtom>;
+concept EufAtomContainer = std::ranges::input_range<T> && std::same_as<std::ranges::range_value_t<T>, EufAtom>;
 
-template<AtomContainer Container>
+template<EufAtomContainer Container>
 std::pair<bool, EufPool> IsSatisfiable(const Container& atoms){
     // return false;
     EufPool pool;
@@ -191,9 +191,15 @@ struct EufModel{
 };
 
 
-template<AtomContainer Container>
+template<EufAtomContainer Container>
 std::pair<std::unordered_map<EufAtom, PropAtom>, std::unordered_map<PropAtom, EufAtom>> 
-MakeEufAtomDictionary(Container formulae);
+MakeEufAtomDictionary(Container formulae){
+    std::unordered_map<EufAtom, PropAtom> euf2prop;
+    std::unordered_map<PropAtom, EufAtom> prop2euf;
+    int n = 0;
+    assert(0);
+    return {{}, {}};
+}
 
 EufModel EufSolve(EufFormula formula);
 

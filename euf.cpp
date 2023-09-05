@@ -188,3 +188,7 @@ void EufFormula::AppendAsString(std::ostringstream& oss){
     }
     oss << atom.right.Print() << std::endl;
 }
+
+EufModel EufSolve(EufFormula formula){
+    assert(0);
+}

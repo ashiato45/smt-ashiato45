@@ -193,12 +193,23 @@ struct EufModel{
 
 template<EufAtomContainer Container>
 std::pair<std::unordered_map<EufAtom, PropAtom>, std::unordered_map<PropAtom, EufAtom>> 
-MakeEufAtomDictionary(Container formulae){
+MakeEufAtomDictionary(Container formulae, Minisat::SimpSolver& solver){
     std::unordered_map<EufAtom, PropAtom> euf2prop;
     std::unordered_map<PropAtom, EufAtom> prop2euf;
-    int n = 0;
-    assert(0);
-    return {{}, {}};
+
+    std::unordered_set<EufAtom> temp;
+    for(auto& i: formulae){
+        temp.insert(i);
+    }
+
+    for(auto& i: temp){
+        auto var = solver.newVar();
+        euf2prop.insert({i, var});
+        // euf2prop[temp] = var;
+        // prop2euf[var] = temp;
+        prop2euf.insert({var, i});
+    }
+    return {euf2prop, prop2euf};
 }
 
 EufModel EufSolve(EufFormula formula);

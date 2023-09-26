@@ -148,6 +148,9 @@ struct EufAtom{
 template <typename T>
 concept EufAtomContainer = std::ranges::input_range<T> && std::same_as<std::ranges::range_value_t<T>, EufAtom>;
 
+template <typename T>
+concept EufAtomPtrContainer = std::ranges::input_range<T> && std::same_as<std::ranges::range_value_t<T>, std::shared_ptr<EufAtom>>;
+
 template<EufAtomContainer Container>
 std::pair<bool, EufPool> IsSatisfiable(const Container& atoms){
     // return false;
@@ -198,6 +201,27 @@ MakeEufAtomDictionary(Container formulae, Minisat::SimpSolver& solver){
     std::unordered_map<PropAtom, EufAtom> prop2euf;
 
     std::unordered_set<EufAtom> temp;
+    for(auto& i: formulae){
+        temp.insert(i);
+    }
+
+    for(auto& i: temp){
+        auto var = solver.newVar();
+        euf2prop.insert({i, var});
+        // euf2prop[temp] = var;
+        // prop2euf[var] = temp;
+        prop2euf.insert({var, i});
+    }
+    return {euf2prop, prop2euf};
+}
+
+template<EufAtomPtrContainer Container>
+std::pair<std::unordered_map<std::shared_ptr<EufAtom>, PropAtom>, std::unordered_map<PropAtom, std::shared_ptr<EufAtom>>> 
+MakeEufAtomDictionary(Container formulae, Minisat::SimpSolver& solver){
+    std::unordered_map<std::shared_ptr<EufAtom>, PropAtom> euf2prop;
+    std::unordered_map<PropAtom, std::shared_ptr<EufAtom>> prop2euf;
+
+    std::unordered_set<std::shared_ptr<EufAtom>> temp;
     for(auto& i: formulae){
         temp.insert(i);
     }

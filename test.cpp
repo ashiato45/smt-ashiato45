@@ -369,6 +369,35 @@ TEST(FooTest, Walk) {
     });
 }
 
+// TEST(EufTest, MakeDict){
+//     std::vector<EufAtom> atoms;
+//     auto a = EufTerm(EufSymbol::MakeAtom("a"));
+//     auto b = EufTerm(EufSymbol::MakeAtom("b"));
+//     auto f = EufSymbol::MakeFunction("f", 2);
+//     auto fab = f.Apply2(a, b);
+//     auto ffabb = f.Apply2(fab, b);
+
+//     auto form1 = EufFormula::MakeAtom({true, fab, a});
+//     auto form2 = EufFormula::MakeAtom({false, ffabb, a});
+
+//     std::vector<EufAtom> formulae;
+//     formulae.push_back(form1->atom);
+//     formulae.push_back(form2->atom);
+
+//     Minisat::SimpSolver solver;
+//     auto [euf2prop, prop2euf] = MakeEufAtomDictionary<decltype(formulae)>(formulae, solver);
+
+//     ASSERT_EQ(euf2prop.size(), 2);
+//     ASSERT_EQ(prop2euf.size(), 2);
+
+//     // ASSERT_EQ(prop2euf[euf2prop[form1->atom]], form1->atom);
+//     // ASSERT_EQ(prop2euf[euf2prop[form2->atom]], form2->atom);
+//     ASSERT_EQ(euf2prop[prop2euf[0]], 0);
+//     ASSERT_EQ(euf2prop[prop2euf[2]], 2);
+
+
+// }
+
 
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);

@@ -13,6 +13,7 @@
 #include <concepts>
 #include <ranges>
 
+
 #include "gtest/gtest.h"
 
 #include "formula.h"
@@ -80,12 +81,19 @@ class EufTerm{
     }
 };
 
+
 template<> struct std::hash<EufTerm>{
     std::size_t operator()(EufTerm const& s) const noexcept
     {
         return std::hash<std::string>{}(s.Print());
     }
 };
+
+
+namespace boost
+{
+    std::size_t hash_value(const EufTerm& et);
+}
 
 struct EufPoolNode{
     std::shared_ptr<EufTerm> term;
@@ -146,13 +154,7 @@ struct EufAtom{
 
 
 template<> struct std::hash<EufAtom>{
-    std::size_t operator()(EufAtom const& a) const noexcept
-    {
-        std::pair<EufTerm, EufTerm> x = {a.left, a.right};
-        std::pair<bool, std::pair<EufTerm, EufTerm>> y = {a.equality, x};
-
-        return std::hash<std::pair<bool, std::pair<EufTerm, EufTerm>>>{}(y);
-    }
+    std::size_t operator()(EufAtom const& a) const noexcept;
 };
 
 template <typename T>

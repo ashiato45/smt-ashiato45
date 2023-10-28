@@ -5,3 +5,4 @@ learning
 ## installation
 - Clone an appropriate minisat repository, for example, https://github.com/agurfinkel/minisat.  Official one is too old.
 - Clone google-test here, and build it.  See https://waldeinsamkeit.hatenablog.jp/entry/2020/07/25/212255 for more detailed install information.
+- Download the binary of boost, expand it, and rename the folder to "boost".

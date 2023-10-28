@@ -212,7 +212,7 @@ struct EufModel{
 
 template<EufAtomContainer Container>
 std::pair<std::unordered_map<EufAtom, PropAtom>, std::unordered_map<PropAtom, EufAtom>> 
-MakeEufAtomDictionary(Container atoms, Minisat::SimpSolver& solver){
+MakeEufAtomDictionary(Container& atoms, Minisat::SimpSolver& solver){
     std::unordered_map<EufAtom, PropAtom> euf2prop;
     std::unordered_map<PropAtom, EufAtom> prop2euf;
 

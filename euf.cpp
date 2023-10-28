@@ -209,5 +209,21 @@ void EufFormula::AppendAsString(std::ostringstream& oss) const{
 }
 
 EufModel EufSolve(EufFormula formula){
-    assert(0);
+    // formulaからatomをあつめる
+    std::unordered_set<EufAtom> atoms;
+    formula.Walk([&atoms](EufFormula& f){
+        if(f.op == Op_Atom){
+            atoms.insert(f.atom);
+        }
+    });
+
+    // dictをつくる
+    Minisat::SimpSolver solver;
+    auto [euf2prop, prop2euf] = MakeEufAtomDictionary<decltype(atoms)>(atoms, solver);
+    // dictをつかってpropのformulaをつくる
+    // propのformulaをとく
+    // dictをつかってeufのformulaにもどす
+
+    return {};
+
 }

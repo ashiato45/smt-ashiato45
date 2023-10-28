@@ -29,6 +29,8 @@ struct Formula
     static std::shared_ptr<Formula> MakeOr(std::shared_ptr<Formula> f1, std::shared_ptr<Formula> f2);
     static std::shared_ptr<Formula> MakeNot(std::shared_ptr<Formula> f1);
     void Walk(std::function<void(Formula<T>&)> f);
+    template <typename S>
+    Formula<S> Convert(std::function<S(T&)> f);
 
     void AppendAsString(std::ostringstream& oss) const;
     std::string ToString() const;
@@ -85,6 +87,47 @@ void Formula<T>::Walk(std::function<void(Formula<T>&)> f){
         case Op_Not:
         {
             this->terms[0]->Walk(f);
+        }
+        break;
+        default:
+        {
+            std::cout << this->ToString() << std::endl;
+            assert(0);
+        }
+        
+    }
+}
+
+template <typename T>
+template <typename S>
+Formula<S> Formula<T>::Convert(std::function<S(T&)> func){
+    f(*this);
+    switch(this->op){
+        case Op_Atom:
+        {
+            return Formula<S>::MakeAtom(func(this->atom));
+        }
+        break;
+        case Op_And:
+        {
+            assert(this->terms.size() == 2);
+            auto a = this->terms.at(0)->Convert(func);
+            auto b = this->terms.at(1)->Convert(func);
+            return Formula<S>::MakeAnd(a, b);
+        }
+        case Op_Or:
+        {
+            assert(this->terms.size() == 2);
+            auto a = this->terms.at(0)->Convert(func);
+            auto b = this->terms.at(1)->Convert(func);
+            return Formula<S>::MakeOr(a, b);
+        }
+        break;
+        case Op_Not:
+        {
+            assert(this->terms.size() == 1);
+            auto a = this->terms.at(0)->Convert(func);
+            return Formula<S>::MakeNot(a);
         }
         break;
         default:

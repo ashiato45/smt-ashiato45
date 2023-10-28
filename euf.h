@@ -150,6 +150,10 @@ struct EufAtom{
     bool equality = true;  // trueのとき等式
     EufTerm left;
     EufTerm right;
+
+    bool operator==(const EufAtom& rhs) const{
+        return equality == rhs.equality && left == rhs.left && right == rhs.right;
+    }
 };
 
 
@@ -223,6 +227,9 @@ MakeEufAtomDictionary(Container formulae, Minisat::SimpSolver& solver){
         // euf2prop[temp] = var;
         // prop2euf[var] = temp;
         prop2euf.insert({var, i});
+
+        assert(euf2prop[prop2euf[var]] == var);
+        assert(prop2euf[euf2prop[i]] == i);
     }
     return {euf2prop, prop2euf};
 }

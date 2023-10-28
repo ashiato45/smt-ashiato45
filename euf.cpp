@@ -11,14 +11,14 @@ namespace boost
 }
 
 
-    std::size_t std::hash<EufAtom>::operator()(EufAtom const& a) const noexcept
-    {
-        size_t hash_value = 0;
-        boost::hash_combine(hash_value, a.equality);
-        boost::hash_combine(hash_value, a.left);
-        boost::hash_combine(hash_value, a.right);
-        return hash_value;
-    }
+std::size_t std::hash<EufAtom>::operator()(EufAtom const& a) const noexcept
+{
+    size_t hash_value = 0;
+    boost::hash_combine(hash_value, a.equality);
+    boost::hash_combine(hash_value, a.left);
+    boost::hash_combine(hash_value, a.right);
+    return hash_value;
+}
 
 EufSymbol EufSymbol::MakeAtom(std::string name)
 {

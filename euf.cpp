@@ -221,9 +221,26 @@ EufModel EufSolve(EufFormula formula){
     Minisat::SimpSolver solver;
     auto [euf2prop, prop2euf] = MakeEufAtomDictionary<decltype(atoms)>(atoms, solver);
     // dictをつかってpropのformulaをつくる
+    auto propFormula = formula.Convert<PropAtom>([&euf2prop](EufAtom& ea){
+        return euf2prop[ea];
+    });
     // propのformulaをとく
+    auto res = EufModel{};
+    // auto pPropFormula = std::make_shared<PropFormula>(propFormula);
+    PutIntoSolver(propFormula, solver);
+    res.satisfiable = solver.solve();
+    for(auto [k, v]: prop2euf){
+        res.assignment[v] = (solver.model[k] == Minisat::l_True);
+    }
+    
+
+    // auto ret = solver.solve();
+    // ASSERT_TRUE(ret);
+    // ASSERT_EQ(solver.model[0], Minisat::l_False);
+    // ASSERT_EQ(solver.model[1], Minisat::l_True);
+
     // dictをつかってeufのformulaにもどす
 
-    return {};
+    return res;
 
 }

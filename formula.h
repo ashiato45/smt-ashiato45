@@ -30,7 +30,7 @@ struct Formula
     static std::shared_ptr<Formula> MakeNot(std::shared_ptr<Formula> f1);
     void Walk(std::function<void(Formula<T>&)> f);
     template <typename S>
-    Formula<S> Convert(std::function<S(T&)> f);
+    std::shared_ptr<Formula<S>> Convert(std::function<S(T&)> f);
 
     void AppendAsString(std::ostringstream& oss) const;
     std::string ToString() const;
@@ -100,8 +100,7 @@ void Formula<T>::Walk(std::function<void(Formula<T>&)> f){
 
 template <typename T>
 template <typename S>
-Formula<S> Formula<T>::Convert(std::function<S(T&)> func){
-    f(*this);
+std::shared_ptr<Formula<S>> Formula<T>::Convert(std::function<S(T&)> func){
     switch(this->op){
         case Op_Atom:
         {

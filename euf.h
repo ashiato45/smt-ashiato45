@@ -206,7 +206,8 @@ struct Formula<EufAtom>;
 using EufFormula = Formula<EufAtom>;
 
 struct EufModel{
-    std::map<EufAtom, bool> assignment;
+    bool satisfiable;
+    std::unordered_map<EufAtom, bool> assignment;
 };
 
 

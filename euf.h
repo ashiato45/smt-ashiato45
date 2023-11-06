@@ -213,7 +213,7 @@ struct EufModel{
 
 template<EufAtomContainer Container>
 std::pair<std::unordered_map<EufAtom, PropAtom>, std::unordered_map<PropAtom, EufAtom>> 
-MakeEufAtomDictionary(Container& atoms, Minisat::SimpSolver& solver){
+MakeEufAtomDictionary(Container& atoms, Minisat::Solver& solver){
     std::unordered_map<EufAtom, PropAtom> euf2prop;
     std::unordered_map<PropAtom, EufAtom> prop2euf;
 
@@ -224,6 +224,7 @@ MakeEufAtomDictionary(Container& atoms, Minisat::SimpSolver& solver){
 
     for(auto& atom: temp){
         auto var = solver.newVar();
+                std::cout << "atomdict: added one dict" << var << std::endl;
         euf2prop.insert({atom, var});
         // euf2prop[temp] = var;
         // prop2euf[var] = temp;
@@ -257,7 +258,7 @@ MakeEufAtomDictionary(Container& atoms, Minisat::SimpSolver& solver){
 //     return {euf2prop, prop2euf};
 // }
 
-EufModel EufSolve(EufFormula formula);
+EufModel EufSolve(EufFormula& formula);
 
 // class EufTermTree{
 //     public:

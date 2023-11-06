@@ -208,7 +208,7 @@ void EufFormula::AppendAsString(std::ostringstream& oss) const{
     oss << atom.right.Print() << std::endl;
 }
 
-EufModel EufSolve(EufFormula formula){
+EufModel EufSolve(EufFormula& formula){
     // formulaからatomをあつめる
     std::unordered_set<EufAtom> atoms;
     formula.Walk([&atoms](EufFormula& f){
@@ -218,7 +218,7 @@ EufModel EufSolve(EufFormula formula){
     });
 
     // dictをつくる
-    Minisat::SimpSolver solver;
+    Minisat::Solver solver;
     auto [euf2prop, prop2euf] = MakeEufAtomDictionary<decltype(atoms)>(atoms, solver);
     // dictをつかってpropのformulaをつくる
     auto propFormula = formula.Convert<PropAtom>([&euf2prop](EufAtom& ea){
@@ -227,6 +227,7 @@ EufModel EufSolve(EufFormula formula){
     // propのformulaをとく
     auto res = EufModel{};
     // auto pPropFormula = std::make_shared<PropFormula>(propFormula);
+    std::cout << "hoge" << propFormula->ToString() << std::endl;
     PutIntoSolver(propFormula, solver);
     res.satisfiable = solver.solve();
     for(auto [k, v]: prop2euf){

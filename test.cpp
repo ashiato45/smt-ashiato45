@@ -398,7 +398,7 @@ TEST(EufTest, MakeDict){
 
 }
 
-TEST(EufTest, EufSolveHelp){
+TEST(EufTest, EufSolveNaiveHelp){
     Minisat::Solver solver;
     // auto a = PropFormula::MakeAtom(1);
     // auto b = PropFormula::MakeAtom(2);
@@ -417,7 +417,7 @@ TEST(EufTest, EufSolveHelp){
 
 }
 
-TEST(EufTest, EufSolve){
+TEST(EufTest, EufSolveNaive){
     std::vector<EufAtom> atoms;
     auto a = EufTerm(EufSymbol::MakeAtom("a"));
     auto b = EufTerm(EufSymbol::MakeAtom("b"));
@@ -430,12 +430,13 @@ TEST(EufTest, EufSolve){
 
     auto form = EufFormula::MakeAnd(form1, form2);
     
-    auto model = EufSolve(*form.get());
+    auto model = EufSolveNaive(*form.get());
 
     for(auto [k, v]: model.assignment){
         std::cout << k.left.Print() << (k.equality ? "==" : "!=") << k.right.Print() << "!!" << v << std::endl;
     }
-    ASSERT_FALSE(model.satisfiable);
+    // EufTermとしての中身は無視しているので、両方trueにしておけば充足できる。
+    ASSERT_TRUE(model.satisfiable);
     
 
 }

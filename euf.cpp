@@ -208,7 +208,7 @@ void EufFormula::AppendAsString(std::ostringstream& oss) const{
     oss << atom.right.Print() << std::endl;
 }
 
-EufModel EufSolve(EufFormula& formula){
+EufModel EufSolveNaive(EufFormula& formula){
     // formulaからatomをあつめる
     std::unordered_set<EufAtom> atoms;
     formula.Walk([&atoms](EufFormula& f){

@@ -258,7 +258,7 @@ MakeEufAtomDictionary(Container& atoms, Minisat::Solver& solver){
 //     return {euf2prop, prop2euf};
 // }
 
-EufModel EufSolve(EufFormula& formula);
+EufModel EufSolveNaive(EufFormula& formula);
 
 // class EufTermTree{
 //     public:

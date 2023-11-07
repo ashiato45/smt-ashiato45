@@ -230,8 +230,14 @@ EufModel EufSolveNaive(EufFormula& formula){
     std::cout << "hoge" << propFormula->ToString() << std::endl;
     PutIntoSolver(propFormula, solver);
     res.satisfiable = solver.solve();
-    for(auto [k, v]: prop2euf){
-        res.assignment[v] = (solver.model[k] == Minisat::l_True);
+    if(res.satisfiable){
+        // satのときにはモデルをかえす
+        std::cout << prop2euf.size() << " " << solver.model.size() << std::endl;
+        assert(prop2euf.size() <= solver.model.size());  // tseitnはいってるのでみぎがでかいかも
+        for(auto [k, v]: prop2euf){
+            std::cout << k << std::endl;
+            res.assignment[v] = (solver.model[k] == Minisat::l_True);
+        }
     }
     
 
@@ -244,4 +250,57 @@ EufModel EufSolveNaive(EufFormula& formula){
 
     return res;
 
+}
+
+std::shared_ptr<EufFormula> MakeFormulaFromCounterModel(EufModel& counterModel){
+    // 全部がみたされる、ということはない
+    assert(counterModel.assignment.size() > 0);
+    std::vector<std::shared_ptr<EufFormula>> formulae;
+
+    for(auto [atom, eq]: counterModel.assignment){
+        if(!eq){
+            formulae.push_back(EufFormula::MakeNot(EufFormula::MakeAtom(atom)));
+        }else{
+            formulae.push_back(EufFormula::MakeAtom(atom));
+        }
+    }
+
+    auto res = formulae[0];
+    for(int i=1; i < formulae.size(); i++){
+        res = EufFormula::MakeAnd(res, formulae[i]);
+    }
+    
+    return EufFormula::MakeNot(res);
+}
+
+EufModel EufSolve(EufFormula& formula){
+    auto currentFormula = std::make_shared<EufFormula>(formula);
+
+    while(true){
+        // TODO: ここにformulaにcountermodels情報を追加してsolveするものをかえる
+        
+        auto res = EufSolveNaive(*currentFormula.get());
+        if(res.satisfiable){
+            std::vector<EufAtom> atoms;
+            for(auto [atom, eq]: res.assignment){
+                atoms.push_back(eq ? atom : (!atom));
+            }
+            auto [checked, pool] = IsSatisfiable(atoms);
+            if(checked){
+                // 本物だった
+                return res;
+            }else{
+                // spurious exampleだった
+                currentFormula = EufFormula::MakeAnd(currentFormula, MakeFormulaFromCounterModel(res));
+            }
+        }else{
+            // 抽象化してさえ無理なんだから無理
+            return res;
+        }
+    }
+    
+
+    // resがsatisfiableかつeufでもsatisfiable → satisfiable
+    // resがunsat → unsat
+    // resがsatisfiableかつeufがunsat → counterexample.  naiveがかえしたmodelの否定を加えてほしい。
 }

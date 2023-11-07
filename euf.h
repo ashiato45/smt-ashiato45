@@ -154,6 +154,10 @@ struct EufAtom{
     bool operator==(const EufAtom& rhs) const{
         return equality == rhs.equality && left == rhs.left && right == rhs.right;
     }
+
+    EufAtom operator!() const{
+        return {!equality, left, right};
+    }
 };
 
 
@@ -208,6 +212,10 @@ using EufFormula = Formula<EufAtom>;
 struct EufModel{
     bool satisfiable;
     std::unordered_map<EufAtom, bool> assignment;
+
+    EufModel operator!() const{
+        return EufModel{!satisfiable, assignment};
+    }
 };
 
 
@@ -259,6 +267,7 @@ MakeEufAtomDictionary(Container& atoms, Minisat::Solver& solver){
 // }
 
 EufModel EufSolveNaive(EufFormula& formula);
+EufModel EufSolve(EufFormula& formula);
 
 // class EufTermTree{
 //     public:

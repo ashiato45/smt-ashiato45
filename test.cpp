@@ -442,6 +442,30 @@ TEST(EufTest, EufSolveNaive){
 }
 
 
+TEST(EufTest, EufSolve){
+    std::vector<EufAtom> atoms;
+    auto a = EufTerm(EufSymbol::MakeAtom("a"));
+    auto b = EufTerm(EufSymbol::MakeAtom("b"));
+    auto f = EufSymbol::MakeFunction("f", 2);
+    auto fab = f.Apply2(a, b);
+    auto ffabb = f.Apply2(fab, b);
+
+    auto form1 = EufFormula::MakeAtom({true, fab, a});
+    auto form2 = EufFormula::MakeAtom({false, ffabb, a});
+
+    auto form = EufFormula::MakeAnd(form1, form2);
+    
+    auto model = EufSolve(*form.get());
+
+    for(auto [k, v]: model.assignment){
+        std::cout << k.left.Print() << (k.equality ? "==" : "!=") << k.right.Print() << "!!" << v << std::endl;
+    }
+    ASSERT_FALSE(model.satisfiable);
+    
+
+}
+
+
 int main(int argc, char** argv) {
     ::testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();

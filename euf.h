@@ -28,6 +28,7 @@ class EufSymbol{
     static EufSymbol MakeAtom(std::string name);
     static EufSymbol MakeFunction(std::string name, int operand);
 
+    EufTerm Apply1(EufTerm x);
     EufTerm Apply2(EufTerm x, EufTerm y);
 
     bool operator==(const EufSymbol& rhs) const{

@@ -443,6 +443,7 @@ TEST(EufTest, EufSolveNaive){
 
 
 TEST(EufTest, EufSolve){
+    // https://www21.in.tum.de/teaching/sar/SS20/6.pdf
     std::vector<EufAtom> atoms;
     auto a = EufTerm(EufSymbol::MakeAtom("a"));
     auto b = EufTerm(EufSymbol::MakeAtom("b"));
@@ -456,6 +457,78 @@ TEST(EufTest, EufSolve){
     auto form = EufFormula::MakeAnd(form1, form2);
     
     auto model = EufSolve(*form.get());
+
+    for(auto [k, v]: model.assignment){
+        std::cout << k.left.Print() << (k.equality ? "==" : "!=") << k.right.Print() << "!!" << v << std::endl;
+    }
+    ASSERT_FALSE(model.satisfiable);
+    
+
+}
+
+TEST(EufTest, EufSolve2){
+    // https://www21.in.tum.de/teaching/sar/SS20/6.pdf
+    std::vector<EufAtom> atoms;
+    auto a = EufTerm(EufSymbol::MakeAtom("a"));
+    auto b = EufTerm(EufSymbol::MakeAtom("b"));
+    auto c = EufTerm(EufSymbol::MakeAtom("c"));
+    auto f = EufSymbol::MakeFunction("f", 1);
+    auto g = EufSymbol::MakeFunction("g", 2);
+    auto fa = f.Apply1(a);
+    auto gfab = g.Apply2(fa, b);
+    auto fc = f.Apply1(c);
+    auto gfca = g.Apply2(fc, a);
+
+    auto form1 = EufFormula::MakeAtom({true, a, b});
+    auto form2 = EufFormula::MakeAtom({true, b, c});
+    auto form3 = EufFormula::MakeAtom({true, gfab, gfca});
+    auto form4 = EufFormula::MakeAtom({false, fa, b});
+
+    auto form = EufFormula::MakeAnd(form1, form2);
+    form = EufFormula::MakeAnd(form, form3);
+    form = EufFormula::MakeAnd(form, form4);
+    
+    auto model = EufSolve(*form.get());
+
+    for(auto [k, v]: model.assignment){
+        std::cout << k.left.Print() << (k.equality ? "==" : "!=") << k.right.Print() << "!!" << v << std::endl;
+    }
+    ASSERT_TRUE(model.satisfiable);
+    
+
+}
+
+TEST(EufTest, EufSolve3){
+    // https://www.csa.iisc.ac.in/~deepakd/logic-2021/EUF.pdf
+    std::vector<EufAtom> atoms;
+    auto z = EufTerm(EufSymbol::MakeAtom("z"));
+    auto x1 = EufTerm(EufSymbol::MakeAtom("x1"));
+    auto y1 = EufTerm(EufSymbol::MakeAtom("y1"));
+    auto x2 = EufTerm(EufSymbol::MakeAtom("x2"));
+    auto y2 = EufTerm(EufSymbol::MakeAtom("y2"));
+    auto u1 = EufTerm(EufSymbol::MakeAtom("u1"));
+    auto u2 = EufTerm(EufSymbol::MakeAtom("u2"));
+
+    auto add = EufSymbol::MakeFunction("add", 2);
+    auto mul = EufSymbol::MakeFunction("mul", 2);
+
+    auto x1y1 = add.Apply2(x1, y1);
+    auto x2y2 = add.Apply2(x2, y2);
+    auto u1u2 = mul.Apply2(u1, u2);
+    auto x1y1x2y2 = mul.Apply2(x1y1, x2y2);
+
+    auto s1 = EufFormula::MakeAtom({true, z, x1y1x2y2});
+    auto t1 = EufFormula::MakeAtom({true, u1, x1y1});
+    auto t2 = EufFormula::MakeAtom({true, u2, x2y2});
+    auto t3 = EufFormula::MakeAtom({true, z, u1u2});
+
+    auto left = EufFormula::MakeAnd(t1, EufFormula::MakeAnd(t2, t3));
+    auto right = s1;
+    auto checking = EufFormula::MakeOr(EufFormula::MakeNot(left), right);
+
+    auto negChecking = EufFormula::MakeNot(checking);
+    
+    auto model = EufSolve(*negChecking.get());
 
     for(auto [k, v]: model.assignment){
         std::cout << k.left.Print() << (k.equality ? "==" : "!=") << k.right.Print() << "!!" << v << std::endl;

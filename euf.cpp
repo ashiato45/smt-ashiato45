@@ -35,6 +35,12 @@ EufSymbol EufSymbol::MakeFunction(std::string name, int operand)
     return res;
 }
 
+EufTerm EufSymbol::Apply1(EufTerm x){
+    std::vector<EufTerm> args{x};
+    assert(this->numOp == 1);
+    return EufTerm(*this, args);
+}
+
 EufTerm EufSymbol::Apply2(EufTerm x, EufTerm y){
     std::vector<EufTerm> args{x, y};
     assert(this->numOp == 2);
